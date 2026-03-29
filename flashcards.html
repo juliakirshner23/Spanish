@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///Users/BigCheese/Downloads/flashcards.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Spanish Flashcards</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:         #faf8f4;
+  --surface:    #ffffff;
+  --surfaceFlip:#f5f0e8;
+  --border:     #e8e0d0;
+  --borderFlip: #d9cdb8;
+  --text:       #2a2218;
+  --textMid:    #7a6a54;
+  --textLight:  #b0a090;
+  --accent:     #b5813a;
+  --accentBg:   #b5813a18;
+  --red:        #d94f4f;
+  --amber:      #c87d1a;
+  --green:      #3a9e6a;
+  --shadow:     0 2px 12px rgba(60,40,10,0.10);
+  --shadowCard: 0 6px 32px rgba(60,40,10,0.13);
+  --nav-h:      72px;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+  background: var(--bg);
+  background-image: radial-gradient(ellipse at 30% 0%, #fff9f0 0%, #faf8f4 60%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: calc(var(--nav-h) + 16px);
+}
+
+/* ── Header ── */
+#header {
+  width: 100%; max-width: 600px;
+  padding: 20px 18px 0;
+}
+#header-top {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+}
+#header h1 {
+  font-size: 22px; font-weight: normal;
+  color: var(--text); letter-spacing: 0.01em;
+}
+#header-sub {
+  font-size: 10px; letter-spacing: 0.18em;
+  color: var(--textLight); text-transform: uppercase;
+  margin-bottom: 3px;
+}
+#auto-speak-btn {
+  background: var(--accentBg); color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 20px; padding: 8px 14px;
+  font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; flex-shrink: 0;
+  min-height: 44px;
+}
+#auto-speak-btn.off {
+  background: var(--surface); color: var(--textLight);
+  border-color: var(--border);
+}
+
+/* ── Progress bar ── */
+#progress-wrap { padding: 14px 18px 0; width: 100%; max-width: 600px; }
+#progress-bar {
+  display: flex; height: 7px; border-radius: 4px;
+  overflow: hidden; background: #ece6da;
+}
+#progress-bar div { transition: flex 0.5s ease; }
+#progress-labels {
+  display: flex; flex-wrap: wrap; gap: 10px 18px;
+  margin-top: 8px; font-size: 11px; color: var(--textLight);
+}
+#total-label { margin-left: auto; }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+/* ── Views ── */
+.view { display: none; width: 100%; max-width: 600px; padding: 0 18px; }
+.view.active { display: block; }
+#view-study  { margin-top: 20px; }
+#view-manage { margin-top: 20px; }
+#view-add    { margin-top: 24px; }
+
+/* ── Bottom nav ── */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--surface);
+  border-top: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 50;
+  box-shadow: 0 -4px 20px rgba(60,40,10,0.08);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  background: none; border: none; cursor: pointer;
+  color: var(--textLight); font-family: inherit;
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 0; min-height: 44px;
+  transition: color 0.2s;
+}
+.nav-btn .nav-icon { font-size: 22px; line-height: 1; }
+.nav-btn.active { color: var(--accent); }
+
+/* ── Flashcard ── */
+#card {
+  width: 100%; min-height: 210px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 36px 28px 52px; position: relative;
+  user-select: none;
+  transition: background 0.25s, border-color 0.25s, transform 0.18s;
+  box-shadow: var(--shadowCard);
+  -webkit-user-select: none;
+}
+#card.flipped { background: var(--surfaceFlip); border-color: var(--borderFlip); }
+#card.animating { transform: scale(0.96) translateY(4px); }
+#card-lang-label {
+  position: absolute; top: 14px; left: 16px;
+  font-size: 10px; letter-spacing: 0.18em;
+  color: var(--textLight); text-transform: uppercase;
+}
+#card-bucket-label {
+  position: absolute; top: 13px; right: 16px;
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+#card-text {
+  font-style: italic; text-align: center;
+  line-height: 1.3; transition: font-size 0.2s, color 0.2s;
+  font-size: 38px; color: var(--text);
+}
+#card-hint {
+  margin-top: 20px; font-size: 10px;
+  color: var(--textLight); letter-spacing: 0.14em; text-transform: uppercase;
+  text-align: center;
+}
+#card-speak {
+  position: absolute; bottom: 12px; right: 14px;
+}
+.speak-btn {
+  border-radius: 50%; background: var(--surface);
+  border: 1.5px solid var(--border); color: var(--textLight);
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: all 0.15s;
+  box-shadow: var(--shadow);
+  width: 40px; height: 40px; font-size: 18px; flex-shrink: 0;
+}
+.speak-btn.small { width: 32px; height: 32px; font-size: 15px; }
+.speak-btn:active { border-color: var(--accent); color: var(--accent); }
+
+/* ── Mic button ── */
+#mic-btn {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--textMid); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+  transition: all 0.2s; box-shadow: var(--shadow);
+}
+#mic-btn.listening {
+  background: #d94f4f10; border-color: var(--red); color: var(--red);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 4px #d94f4f18; }
+  50%      { box-shadow: 0 0 0 14px #d94f4f06; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Answer area ── */
+#answer-row {
+  display: flex; gap: 8px; width: 100%; margin-top: 12px; align-items: stretch;
+}
+#answer-input {
+  flex: 1; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; color: var(--text);
+  font-family: inherit; font-size: 16px;
+  font-style: italic; outline: none;
+  box-shadow: var(--shadow); min-height: 52px;
+  -webkit-appearance: none;
+}
+#answer-input::placeholder { color: #c0b0a0; font-style: italic; }
+#check-btn {
+  background: var(--border); color: var(--textLight);
+  border: none; border-radius: 12px; padding: 0 18px;
+  font-family: inherit; font-size: 14px;
+  cursor: default; white-space: nowrap;
+  box-shadow: var(--shadow); transition: all 0.2s;
+  min-height: 52px;
+}
+#check-btn.ready { background: var(--accent); color: #fff; cursor: pointer; }
+
+/* ── Result panel ── */
+#result-panel {
+  display: none; width: 100%; margin-top: 12px;
+  background: var(--surface); border-radius: 12px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+  animation: slideUp 0.2s ease; border: 1.5px solid transparent;
+}
+#result-panel.show { display: block; }
+#result-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+#result-msg  { font-size: 15px; font-style: italic; }
+#result-pct  { font-size: 12px; color: var(--textLight); margin-left: 8px; }
+#result-answer-row { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--textMid); margin-top: 4px; }
+#result-target { color: var(--text); font-style: italic; }
+#result-you-said { font-size: 11px; color: var(--textLight); margin-top: 6px; font-style: italic; }
+
+/* ── Listen panel ── */
+#listen-panel {
+  display: none; width: 100%; margin-top: 12px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 12px 16px; box-shadow: var(--shadow);
+}
+#listen-panel.show { display: block; animation: slideUp 0.15s ease; }
+#listen-label { font-size: 10px; letter-spacing: 0.15em; color: var(--textLight); text-transform: uppercase; margin-bottom: 5px; }
+#listen-transcript { font-style: italic; font-size: 18px; color: var(--text); min-height: 26px; }
+
+/* ── Controls row ── */
+#controls-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; align-items: stretch; }
+#rate-btns { display: flex; gap: 8px; flex: 1; opacity: 0.25; pointer-events: none; transition: opacity 0.3s; }
+#rate-btns.enabled { opacity: 1; pointer-events: auto; }
+.rate-btn {
+  flex: 1; padding: 16px 4px; min-height: 70px;
+  background: var(--surface); border-radius: 12px;
+  cursor: pointer; font-family: inherit;
+  font-size: 11px; letter-spacing: 0.03em;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  transition: all 0.15s; box-shadow: var(--shadow);
+  border-width: 1.5px; border-style: solid;
+  -webkit-tap-highlight-color: transparent;
+}
+.rate-btn .symbol { font-size: 22px; line-height: 1; }
+.rate-btn:active { opacity: 0.75; transform: scale(0.97); }
+
+#study-hint { margin-top: 10px; font-size: 11px; color: var(--textLight); font-style: italic; text-align: center; }
+
+/* ── Manage view ── */
+.bucket-section { margin-bottom: 28px; }
+.bucket-header {
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom-width: 2px; border-bottom-style: solid;
+}
+.card-row {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+  box-shadow: var(--shadow);
+}
+.card-row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.card-row .spanish { flex: 1; font-style: italic; font-size: 16px; }
+.card-row .arrow { color: var(--textLight); }
+.card-row .english { flex: 1; color: var(--textMid); font-size: 14px; }
+.card-row-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.icon-speak-btn { background: none; border: none; color: var(--textLight); cursor: pointer; font-size: 16px; padding: 0; min-width: 28px; }
+.move-btn {
+  background: var(--surface); border-radius: 6px;
+  padding: 6px 10px; font-family: inherit;
+  font-size: 11px; cursor: pointer; white-space: nowrap;
+  border-width: 1.5px; border-style: solid; min-height: 34px;
+}
+.del-btn {
+  background: var(--surface); border: 1.5px solid #f0d0d0;
+  color: #c06060; border-radius: 6px;
+  padding: 6px 10px; font-size: 14px; cursor: pointer; min-height: 34px;
+}
+
+/* ── Add view ── */
+.add-section-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--textLight); margin-bottom: 22px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--textMid); margin-bottom: 8px; }
+.field input {
+  width: 100%; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; color: var(--text);
+  font-family: inherit; font-size: 17px;
+  font-style: italic; outline: none; min-height: 52px;
+  -webkit-appearance: none;
+}
+.field input::placeholder { color: #c0b0a0; font-style: italic; }
+#add-submit {
+  width: 100%; margin-top: 8px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px; padding: 16px;
+  font-family: inherit; font-size: 15px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; box-shadow: 0 2px 14px #b5813a44;
+  min-height: 56px;
+}
+#dir-section { margin-top: 36px; border-top: 1.5px solid var(--border); padding-top: 24px; }
+#dir-section h3 { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--textLight); margin-bottom: 12px; font-weight: normal; }
+#dir-btns { display: flex; gap: 10px; }
+.dir-btn {
+  flex: 1; padding: 14px 8px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 10px; color: var(--textMid);
+  font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all 0.2s; min-height: 52px;
+}
+.dir-btn.active { background: var(--accentBg); border-color: var(--accent); color: var(--accent); }
+
+
+/* ── Sync view ── */
+#view-sync { margin-top: 24px; align-items: stretch; }
+.sync-btn {
+  width: 100%; padding: 18px 16px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px;
+  font-family: inherit; font-size: 15px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; min-height: 56px;
+  box-shadow: 0 2px 14px #b5813a44;
+  transition: all 0.2s; display: flex;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.sync-btn:disabled { background: var(--border); color: var(--textLight); box-shadow: none; cursor: default; }
+.sync-status {
+  margin-top: 20px; padding: 12px 18px;
+  border-radius: 10px; font-size: 14px;
+  font-style: italic; text-align: center;
+  animation: slideUp 0.2s ease;
+}
+#api-key-input {
+  width: 100%; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; color: var(--text);
+  font-family: inherit; font-size: 14px;
+  outline: none; min-height: 52px;
+  letter-spacing: 0.05em;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spinning { display: inline-block; animation: spin 1s linear infinite; }
+
+
+/* ── Conjugation view ── */
+#view-conj { margin-top: 20px; align-items: center; }
+.tense-btn {
+  flex: 1; padding: 10px 6px; border-radius: 10px;
+  background: var(--surface); color: var(--textMid);
+  border: 1.5px solid var(--border);
+  font-family: inherit; font-size: 12px;
+  cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.05em; min-height: 40px;
+}
+.tense-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+#conj-card {
+  width: 100%; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 16px;
+  padding: 32px 28px 24px; box-shadow: var(--shadowCard);
+  position: relative; text-align: center; margin-top: 4px;
+}
+#conj-verb { font-size: 32px; font-style: italic; color: var(--text); margin-bottom: 4px; }
+#conj-english { font-size: 13px; color: var(--textMid); margin-bottom: 18px; }
+#conj-prompt { font-size: 18px; color: var(--accent); font-style: italic; }
+#conj-tense-label {
+  position: absolute; top: 14px; left: 18px;
+  font-size: 10px; letter-spacing: 0.18em;
+  color: var(--textLight); text-transform: uppercase;
+}
+#conj-context {
+  display: none; width: 100%; margin-top: 12px;
+  background: var(--accentBg); border: 1.5px solid #b5813a44;
+  border-radius: 10px; padding: 12px 16px;
+  animation: slideUp 0.2s ease;
+}
+#conj-context-label { font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+#conj-sentence { font-size: 15px; font-style: italic; color: var(--text); margin-bottom: 4px; }
+#conj-sentence-en { font-size: 12px; color: var(--textMid); }
+#conj-answer-row { display: flex; gap: 8px; margin-top: 14px; width: 100%; }
+#conj-input {
+  flex: 1; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; color: var(--text);
+  font-family: inherit; font-size: 16px;
+  font-style: italic; outline: none;
+  box-shadow: var(--shadow); min-height: 52px;
+  -webkit-appearance: none;
+}
+#conj-check-btn {
+  background: var(--border); color: var(--textLight);
+  border: none; border-radius: 12px; padding: 0 18px;
+  font-family: inherit; font-size: 14px;
+  cursor: default; white-space: nowrap;
+  box-shadow: var(--shadow); transition: all 0.2s; min-height: 52px;
+}
+#conj-check-btn.ready { background: var(--accent); color: #fff; cursor: pointer; }
+#conj-result {
+  display: none; width: 100%; margin-top: 14px;
+  background: var(--surface); border-radius: 12px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+  border: 1.5px solid transparent; animation: slideUp 0.2s ease;
+}
+#conj-result.show { display: block; }
+#conj-result-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+#conj-result-msg { font-size: 15px; font-style: italic; }
+#conj-result-answer { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--textMid); }
+#conj-result-you { font-size: 11px; color: var(--textLight); margin-top: 5px; font-style: italic; }
+#conj-result-hint { font-size: 12px; font-style: italic; margin-top: 5px; display: none; }
+#conj-next-btn {
+  display: none; width: 100%; margin-top: 14px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px; padding: 14px;
+  font-family: inherit; font-size: 14px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; box-shadow: 0 2px 14px #b5813a44; min-height: 52px;
+}
+#conj-start-wrap { width: 100%; text-align: center; margin-top: 20px; }
+#conj-start-btn {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 12px; padding: 16px 32px;
+  font-family: inherit; font-size: 15px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; box-shadow: 0 2px 14px #b5813a44; min-height: 56px;
+}
+#conj-loading { display: none; margin-top: 40px; color: var(--textLight); font-style: italic; font-size: 16px; align-items: center; gap: 10px; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+  color: #fff; padding: 12px 28px; border-radius: 24px;
+  font-style: italic; font-size: 16px; z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  pointer-events: none; display: none; letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+#no-sr-banner {
+  background: #fff8ed; border: 1.5px solid #e8c87a;
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 13px; color: #7a5a1a;
+  margin-top: 12px; width: 100%; text-align: center; display: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+  <div id="header-top">
+    <div>
+      <div id="header-sub">English → Español</div>
+      <h1>Spanish Flashcards</h1>
+    </div>
+    <button id="auto-speak-btn" class="off" onclick="toggleAutoSpeak()">🔇 Auto</button>
+  </div>
+</div>
+
+<!-- Progress -->
+<div id="progress-wrap">
+  <div id="progress-bar">
+    <div id="pb-dont" style="background: rgb(217, 79, 79); flex: 272 1 0%; min-width: 4px;"></div>
+    <div id="pb-more" style="background: rgb(200, 125, 26); flex: 0 1 0%; min-width: 0px;"></div>
+    <div id="pb-know" style="background: rgb(58, 158, 106); flex: 0 1 0%; min-width: 0px;"></div>
+  </div>
+  <div id="progress-labels">
+    <span><span class="dot" style="background:#d94f4f"></span>Don't Know: <span id="lbl-dont">272</span></span>
+    <span><span class="dot" style="background:#c87d1a"></span>Practice: <span id="lbl-more">0</span></span>
+    <span><span class="dot" style="background:#3a9e6a"></span>Know: <span id="lbl-know">0</span></span>
+    <span id="total-label">272 cards</span>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- STUDY VIEW -->
+<div id="view-study" class="view active">
+  <div id="card" onclick="flipCard()">
+    <div id="card-lang-label">English</div>
+    <div id="card-bucket-label" style="color: rgb(217, 79, 79);"></div>
+    <div id="card-text" style="font-size: 38px; color: var(--text);">to defend</div>
+    <div id="card-hint" style="display: block;">tap to reveal · or speak / type below</div>
+    <div id="card-speak">
+      <button class="speak-btn" onclick="event.stopPropagation(); speakFront()" title="Read aloud">🔊</button>
+    </div>
+  </div>
+
+  <div id="no-sr-banner">⚠️ Use Safari or Chrome on desktop for mic support.</div>
+
+  <div id="listen-panel">
+    <div id="listen-label">Listening…</div>
+    <div id="listen-transcript">…</div>
+  </div>
+
+  <div id="answer-row">
+    <button id="mic-btn" onclick="toggleMic()" title="Speak your answer">🎤</button>
+    <input id="answer-input" type="text" placeholder="Escribe la traducción" oninput="onAnswerInput()" onkeydown="onAnswerKey(event)" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <button id="check-btn" onclick="checkAnswer()">Check</button>
+  </div>
+
+  <div id="result-panel">
+    <div id="result-top">
+      <div>
+        <span id="result-msg"></span>
+        <span id="result-pct"></span>
+      </div>
+      <div id="result-answer-row">
+        <span>Answer:</span>
+        <em id="result-target"></em>
+        <button class="speak-btn small" id="result-speak-btn">🔊</button>
+      </div>
+    </div>
+    <div id="result-you-said"></div>
+    <div id="result-hint" style="display:none;margin-top:6px;font-size:12px;font-style:italic;"></div>
+  </div>
+
+  <div id="controls-row">
+    <div id="rate-btns">
+      <button class="rate-btn" id="btn-dont" style="border-color: rgba(217, 79, 79, 0.333); color: rgb(217, 79, 79); background: var(--surface);" onclick="rate(&#39;dont_know&#39;)">
+        <span class="symbol">✗</span><span>Don't Know</span>
+      </button>
+      <button class="rate-btn" id="btn-more" style="border-color: rgba(200, 125, 26, 0.333); color: rgb(200, 125, 26); background: var(--surface);" onclick="rate(&#39;more_practice&#39;)">
+        <span class="symbol">~</span><span>Practice</span>
+      </button>
+      <button class="rate-btn" id="btn-know" style="border-color: rgba(58, 158, 106, 0.333); color: rgb(58, 158, 106); background: var(--surface);" onclick="rate(&#39;know&#39;)">
+        <span class="symbol">✓</span><span>Know It</span>
+      </button>
+    </div>
+  </div>
+  <div id="study-hint">Speak or type · flip to reveal · then rate · <span id="session-count">0</span> reviewed</div>
+</div>
+
+<!-- MANAGE VIEW -->
+<div id="view-manage" class="view">
+  <div id="manage-content"></div>
+</div>
+
+<!-- ADD VIEW -->
+<div id="view-add" class="view">
+  <div class="add-section-title">Add New Card</div>
+  <div class="field">
+    <label>Spanish</label>
+    <input id="new-spanish" type="text" placeholder="ej. mariposa" autocorrect="off" autocapitalize="off">
+  </div>
+  <div class="field">
+    <label>English</label>
+    <input id="new-english" type="text" placeholder="e.g. butterfly" autocorrect="off">
+  </div>
+  <button id="add-submit" onclick="addCard()">Add Card</button>
+
+  <div id="dir-section">
+    <h3>Session direction</h3>
+    <div id="dir-btns">
+      <button class="dir-btn" id="dir-es" onclick="setDirection(&#39;spanish_first&#39;)">Español → English</button>
+      <button class="dir-btn active" id="dir-en" onclick="setDirection(&#39;english_first&#39;)">English → Español</button>
+    </div>
+  </div>
+  <div id="voice-section" style="margin-top:28px;border-top:1.5px solid var(--border);padding-top:24px">
+    <h3 style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--textLight);margin-bottom:14px;font-weight:normal">Voice settings</h3>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:var(--textMid);margin-bottom:7px;letter-spacing:0.05em">Spanish voice</div>
+      <div style="display:flex;gap:8px">
+        <select id="voice-es-select" onchange="saveVoice(&#39;es&#39;,this.value)" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;min-height:48px;appearance:none;-webkit-appearance:none"><option value="">— auto-select —</option><option value="Eddy (Spanish (Spain))">Eddy (Spanish (Spain)) (es-ES)</option><option value="Eddy (Spanish (Mexico))">Eddy (Spanish (Mexico)) (es-MX)</option><option value="Flo (Spanish (Spain))">Flo (Spanish (Spain)) (es-ES)</option><option value="Flo (Spanish (Mexico))">Flo (Spanish (Mexico)) (es-MX)</option><option value="Grandma (Spanish (Spain))">Grandma (Spanish (Spain)) (es-ES)</option><option value="Grandma (Spanish (Mexico))">Grandma (Spanish (Mexico)) (es-MX)</option><option value="Grandpa (Spanish (Spain))">Grandpa (Spanish (Spain)) (es-ES)</option><option value="Grandpa (Spanish (Mexico))">Grandpa (Spanish (Mexico)) (es-MX)</option><option value="Mónica">Mónica (es-ES)</option><option value="Paulina">Paulina (es-MX)</option><option value="Reed (Spanish (Spain))">Reed (Spanish (Spain)) (es-ES)</option><option value="Reed (Spanish (Mexico))">Reed (Spanish (Mexico)) (es-MX)</option><option value="Rocko (Spanish (Spain))">Rocko (Spanish (Spain)) (es-ES)</option><option value="Rocko (Spanish (Mexico))">Rocko (Spanish (Mexico)) (es-MX)</option><option value="Sandy (Spanish (Spain))">Sandy (Spanish (Spain)) (es-ES)</option><option value="Sandy (Spanish (Mexico))">Sandy (Spanish (Mexico)) (es-MX)</option><option value="Shelley (Spanish (Spain))">Shelley (Spanish (Spain)) (es-ES)</option><option value="Shelley (Spanish (Mexico))">Shelley (Spanish (Mexico)) (es-MX)</option><option value="Google español">Google español (es-ES)</option><option value="Google español de Estados Unidos">Google español de Estados Unidos (es-US)</option></select>
+        <button onclick="speak(&#39;Buenos días, ¿cómo estás?&#39;,&#39;es&#39;)" style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:0 14px;cursor:pointer;color:var(--textLight);font-size:18px;min-height:48px">🔊</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--textMid);margin-bottom:7px;letter-spacing:0.05em">English voice</div>
+      <div style="display:flex;gap:8px">
+        <select id="voice-en-select" onchange="saveVoice(&#39;en&#39;,this.value)" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;min-height:48px;appearance:none;-webkit-appearance:none"><option value="">— auto-select —</option><option value="Samantha">Samantha (en-US)</option><option value="Albert">Albert (en-US)</option><option value="Bad News">Bad News (en-US)</option><option value="Bahh">Bahh (en-US)</option><option value="Bells">Bells (en-US)</option><option value="Boing">Boing (en-US)</option><option value="Bubbles">Bubbles (en-US)</option><option value="Cellos">Cellos (en-US)</option><option value="Daniel">Daniel (en-GB)</option><option value="Eddy (English (United States))">Eddy (English (United States)) (en-US)</option><option value="Eddy (English (United Kingdom))">Eddy (English (United Kingdom)) (en-GB)</option><option value="Flo (English (United States))">Flo (English (United States)) (en-US)</option><option value="Flo (English (United Kingdom))">Flo (English (United Kingdom)) (en-GB)</option><option value="Fred">Fred (en-US)</option><option value="Good News">Good News (en-US)</option><option value="Grandma (English (United States))">Grandma (English (United States)) (en-US)</option><option value="Grandma (English (United Kingdom))">Grandma (English (United Kingdom)) (en-GB)</option><option value="Grandpa (English (United States))">Grandpa (English (United States)) (en-US)</option><option value="Grandpa (English (United Kingdom))">Grandpa (English (United Kingdom)) (en-GB)</option><option value="Jester">Jester (en-US)</option><option value="Junior">Junior (en-US)</option><option value="Karen">Karen (en-AU)</option><option value="Kathy">Kathy (en-US)</option><option value="Moira">Moira (en-IE)</option><option value="Organ">Organ (en-US)</option><option value="Ralph">Ralph (en-US)</option><option value="Reed (English (United States))">Reed (English (United States)) (en-US)</option><option value="Reed (English (United Kingdom))">Reed (English (United Kingdom)) (en-GB)</option><option value="Rishi">Rishi (en-IN)</option><option value="Rocko (English (United States))">Rocko (English (United States)) (en-US)</option><option value="Rocko (English (United Kingdom))">Rocko (English (United Kingdom)) (en-GB)</option><option value="Sandy (English (United States))">Sandy (English (United States)) (en-US)</option><option value="Sandy (English (United Kingdom))">Sandy (English (United Kingdom)) (en-GB)</option><option value="Shelley (English (United States))">Shelley (English (United States)) (en-US)</option><option value="Shelley (English (United Kingdom))">Shelley (English (United Kingdom)) (en-GB)</option><option value="Superstar">Superstar (en-US)</option><option value="Tessa">Tessa (en-ZA)</option><option value="Trinoids">Trinoids (en-US)</option><option value="Whisper">Whisper (en-US)</option><option value="Wobble">Wobble (en-US)</option><option value="Zarvox">Zarvox (en-US)</option><option value="Google US English">Google US English (en-US)</option><option value="Google UK English Female">Google UK English Female (en-GB)</option><option value="Google UK English Male">Google UK English Male (en-GB)</option></select>
+        <button onclick="speak(&#39;Hello, how are you?&#39;,&#39;en&#39;)" style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:0 14px;cursor:pointer;color:var(--textLight);font-size:18px;min-height:48px">🔊</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- LEARN VIEW -->
+<div id="view-learn" class="view">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:16px;font-size:12px;color:var(--textLight)">
+    <span id="learn-dont-count">Don't Know cards: 0</span>
+    <span id="learn-score" style="color:var(--green)"></span>
+  </div>
+
+  <div id="learn-start-wrap" style="text-align:center;margin-top:20px">
+    <p style="font-size:13px;color:var(--textMid);margin-bottom:24px;line-height:1.7">
+      Multiple choice using your Don't Know cards.<br>Direction is random each question.
+    </p>
+    <button onclick="startLearn()" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:16px 32px;font-family:inherit;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 14px #b5813a44;min-height:56px">Start</button>
+  </div>
+
+  <div id="learn-question" style="display:none;width:100%">
+    <!-- Question card -->
+    <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:32px 24px;box-shadow:var(--shadowCard);text-align:center;margin-bottom:20px;position:relative">
+      <div id="learn-dir-label" style="position:absolute;top:14px;left:16px;font-size:10px;letter-spacing:0.16em;color:var(--textLight);text-transform:uppercase"></div>
+      <div id="learn-q-text" style="font-size:34px;font-style:italic;color:var(--text);margin-bottom:8px"></div>
+      <button onclick="if(learnQ) speak(learnQ.question, learnQ.dir===&#39;es_to_en&#39;?&#39;es&#39;:&#39;en&#39;)" style="position:absolute;bottom:12px;right:14px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);color:var(--textLight);width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">🔊</button>
+    </div>
+    <div id="learn-choices"></div>
+    <button id="learn-next-btn" onclick="nextLearnQuestion()" style="display:none;width:100%;margin-top:6px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;min-height:52px;box-shadow:0 2px 14px #b5813a44">Next →</button>
+  </div>
+</div>
+
+<!-- CONJUGATION VIEW -->
+<div id="view-conj" class="view">
+  <!-- Tense selector -->
+  <div style="display:flex;gap:8px;width:100%;margin-bottom:8px">
+    <button class="tense-btn active" id="mode-drill" onclick="setConjMode(&#39;drill&#39;)">Drill</button>
+    <button class="tense-btn" id="mode-ref" onclick="setConjMode(&#39;ref&#39;)">Reference</button>
+  </div>
+  <div id="tense-row" style="display:flex;gap:8px;width:100%;margin-bottom:20px">
+    <button class="tense-btn active" id="tense-present" onclick="selectTense(&#39;present&#39;)">Present</button>
+    <button class="tense-btn" id="tense-preterite" onclick="selectTense(&#39;preterite&#39;)">Preterite</button>
+    <button class="tense-btn" id="tense-future" onclick="selectTense(&#39;future&#39;)">Future</button>
+  </div>
+
+
+  <!-- Reference card (hidden by default) -->
+  <div id="conj-ref" style="display:none;width:100%;animation:slideUp 0.2s ease">
+  </div>
+
+  <!-- Start prompt -->
+  <div id="conj-start-wrap">
+    <p style="font-size:13px;color:var(--textMid);margin-bottom:24px;line-height:1.7">
+      Practice conjugating verbs from your deck.<br>Tap below to get a conjugation prompt.
+    </p>
+    <button id="conj-start-btn" onclick="generateConjExercise()">Start Drilling</button>
+  </div>
+
+  <!-- Loading -->
+  <div id="conj-loading" style="display:none;flex-direction:row">
+    <span class="spinning" style="font-size:20px">⟳</span> Generating exercise…
+  </div>
+
+  <!-- Exercise card -->
+  <div id="conj-card" style="display:none">
+    <div id="conj-tense-label"></div>
+    <div style="font-size:13px;color:var(--textLight);margin-bottom:10px">Conjugate:</div>
+    <div id="conj-verb"></div>
+    <div id="conj-english"></div>
+    <div id="conj-prompt"></div>
+    <div style="position:absolute;bottom:14px;right:14px">
+      <button class="speak-btn" style="width:36px;height:36px;font-size:16px" id="conj-speak-verb">🔊</button>
+    </div>
+  </div>
+
+  <!-- Answer input -->
+  <div id="conj-answer-row" style="display:none">
+    <input id="conj-input" type="text" placeholder="conjugate here…" autocorrect="off" autocapitalize="off" oninput="onConjInput()" onkeydown="onConjKey(event)">
+    <button id="conj-check-btn" onclick="checkConjugation()">Check</button>
+  </div>
+
+  <!-- Result -->
+  <div id="conj-result">
+    <div id="conj-result-top">
+      <span id="conj-result-msg"></span>
+      <div id="conj-result-answer">
+        <span>Answer: <em id="conj-result-correct"></em></span>
+        <button class="speak-btn small" id="conj-result-speak">🔊</button>
+      </div>
+    </div>
+    <div id="conj-result-you"></div>
+    <div id="conj-result-hint"></div>
+  </div>
+
+  <!-- Next button -->
+  <button id="conj-next-btn" onclick="generateConjExercise()">Next →</button>
+</div>
+
+<!-- SYNC VIEW -->
+<div id="view-sync" class="view">
+  <div class="add-section-title">Sync Vocabulary</div>
+  <p style="font-size:13px;color:var(--textMid);margin-bottom:20px;line-height:1.7">
+    Paste your vocabulary doc below, then tap Sync. New words are extracted automatically — translations and stem-change patterns are added where missing. Cards already in your deck are skipped.
+  </p>
+  <div class="field">
+    <label>Anthropic API Key</label>
+    <input id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off" autocorrect="off" autocapitalize="off" oninput="saveApiKey()">
+  </div>
+  <div class="field">
+    <label>Paste vocabulary doc here</label>
+    <textarea id="doc-paste" placeholder="Paste your Google Doc content here…" autocorrect="off" autocapitalize="off" style="width:100%;min-height:160px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:14px;line-height:1.6;outline:none;resize:vertical;-webkit-appearance:none"></textarea>
+  </div>
+  <button class="sync-btn" id="sync-btn" onclick="syncFromDoc()">🔄&nbsp; Sync New Words</button>
+  <div id="sync-status" style="display:none"></div>
+  <!-- Review panel -->
+  <div id="sync-review-wrap" style="display:none;width:100%;margin-top:20px">
+    <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--textLight);margin-bottom:12px">Review new cards — edit or remove before adding</div>
+    <div id="pending-list"></div>
+    <button id="confirm-sync-btn" onclick="confirmSync()" style="width:100%;margin-top:8px;background:#3a9e6a;color:#fff;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;min-height:52px;box-shadow:0 2px 12px #3a9e6a44">Add All Cards →</button>
+  </div>
+  <div style="margin-top:24px;font-size:12px;color:var(--textLight);line-height:1.8;text-align:center">
+    New cards are added to your Don't Know pile.
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<div id="bottom-nav">
+  <button class="nav-btn active" id="nav-study" onclick="switchView(&#39;study&#39;)">
+    <span class="nav-icon">🃏</span>Study
+  </button>
+  <button class="nav-btn" id="nav-manage" onclick="switchView(&#39;manage&#39;)">
+    <span class="nav-icon">📋</span>Cards
+  </button>
+  <button class="nav-btn" id="nav-add" onclick="switchView(&#39;add&#39;)">
+    <span class="nav-icon">＋</span>Add
+  </button>
+  <button class="nav-btn" id="nav-learn" onclick="switchView(&#39;learn&#39;)">
+    <span class="nav-icon">🎯</span>Learn
+  </button>
+  <button class="nav-btn" id="nav-conj" onclick="switchView(&#39;conj&#39;)">
+    <span class="nav-icon">✍️</span>Conj
+  </button>
+  <button class="nav-btn" id="nav-sync" onclick="switchView(&#39;sync&#39;)">
+    <span class="nav-icon">🔄</span>Sync
+  </button>
+</div>
+
+<script>
+const STORAGE_KEY = 'spanish-flashcards-v1';
+const WEIGHTS = { dont_know: 6, more_practice: 3, know: 1 };
+const BUCKET_COLORS = { dont_know: '#d94f4f', more_practice: '#c87d1a', know: '#3a9e6a' };
+const BUCKET_LABELS = { dont_know: "Don't Know", more_practice: 'More Practice', know: 'Know It' };
+
+const DEFAULT_CARDS = [
+  { id:  1, spanish:'hola', english:'hello' },
+  { id:  2, spanish:'gracias', english:'thank you' },
+  { id:  3, spanish:'por favor', english:'please' },
+  { id:  4, spanish:'buenos días', english:'good morning' },
+  { id:  5, spanish:'buenas noches', english:'good night' },
+  { id:  6, spanish:'lo siento', english:'I\'m sorry' },
+  { id:  7, spanish:'hablar', english:'to speak' },
+  { id:  8, spanish:'comer', english:'to eat' },
+  { id:  9, spanish:'el agua (f.)', english:'water' },
+  { id: 10, spanish:'el amor', english:'love' },
+  { id: 11, spanish:'yo', english:'I' },
+  { id: 12, spanish:'tú', english:'you (informal)' },
+  { id: 13, spanish:'él / ella / usted', english:'he / she / you (formal)' },
+  { id: 14, spanish:'nosotros', english:'we / us' },
+  { id: 15, spanish:'ellos / ustedes', english:'they / you all' },
+  { id: 16, spanish:'¿cuál es?', english:'which? / which one?' },
+  { id: 17, spanish:'¿dónde?', english:'where?' },
+  { id: 18, spanish:'¿de dónde?', english:'where from?' },
+  { id: 19, spanish:'¿adónde?', english:'to where?' },
+  { id: 20, spanish:'¿cuánto?', english:'how much?' },
+  { id: 21, spanish:'¿cuánto cuesta?', english:'how much does it cost?' },
+  { id: 22, spanish:'¿cuántos / cuántas?', english:'how many?' },
+  { id: 23, spanish:'¿por qué?', english:'why?' },
+  { id: 24, spanish:'porque', english:'because' },
+  { id: 25, spanish:'¿qué?', english:'what?' },
+  { id: 26, spanish:'¿a qué hora?', english:'at what time?' },
+  { id: 27, spanish:'¿con qué frecuencia?', english:'how often?' },
+  { id: 28, spanish:'¿quién?', english:'who?' },
+  { id: 29, spanish:'¿cómo?', english:'how?' },
+  { id: 30, spanish:'¿cuándo?', english:'when?' },
+  { id: 31, spanish:'ser', english:'to be (permanent: identity, origin, profession — DOctor)' },
+  { id: 32, spanish:'estar', english:'to be (temporary: position, location, emotion — PLACE)' },
+  { id: 33, spanish:'viajar', english:'to travel' },
+  { id: 34, spanish:'cenar', english:'to have dinner' },
+  { id: 35, spanish:'cocinar', english:'to cook' },
+  { id: 36, spanish:'terminar', english:'to finish' },
+  { id: 37, spanish:'desayunar', english:'to have breakfast' },
+  { id: 38, spanish:'escuchar', english:'to listen' },
+  { id: 39, spanish:'llegar', english:'to arrive' },
+  { id: 40, spanish:'regresar', english:'to return' },
+  { id: 41, spanish:'tomar', english:'to take / to drink' },
+  { id: 42, spanish:'pintar', english:'to paint' },
+  { id: 43, spanish:'celebrar', english:'to celebrate' },
+  { id: 44, spanish:'usar', english:'to use' },
+  { id: 45, spanish:'ayudar', english:'to help' },
+  { id: 46, spanish:'tratar', english:'to try / to treat' },
+  { id: 47, spanish:'nadar', english:'to swim' },
+  { id: 48, spanish:'caminar', english:'to walk' },
+  { id: 49, spanish:'mirar', english:'to look at / to watch' },
+  { id: 50, spanish:'buscar', english:'to look for' },
+  { id: 51, spanish:'llevar', english:'to carry / to wear' },
+  { id: 52, spanish:'enseñar', english:'to teach' },
+  { id: 53, spanish:'preguntar', english:'to ask' },
+  { id: 54, spanish:'contestar', english:'to answer' },
+  { id: 55, spanish:'enviar', english:'to send' },
+  { id: 56, spanish:'cortar', english:'to cut' },
+  { id: 57, spanish:'limpiar', english:'to clean' },
+  { id: 58, spanish:'lavar', english:'to wash' },
+  { id: 59, spanish:'trabajar', english:'to work' },
+  { id: 60, spanish:'olvidar', english:'to forget' },
+  { id: 61, spanish:'preparar', english:'to prepare' },
+  { id: 62, spanish:'practicar', english:'to practice' },
+  { id: 63, spanish:'fumar', english:'to smoke' },
+  { id: 64, spanish:'comprar', english:'to buy' },
+  { id: 65, spanish:'pagar', english:'to pay' },
+  { id: 66, spanish:'gastar', english:'to spend money' },
+  { id: 67, spanish:'ganar', english:'to earn / to win' },
+  { id: 68, spanish:'pasar', english:'to pass / to happen' },
+  { id: 69, spanish:'estudiar', english:'to study' },
+  { id: 70, spanish:'esperar', english:'to wait / to hope' },
+  { id: 71, spanish:'necesitar', english:'to need' },
+  { id: 72, spanish:'ahorrar', english:'to save money' },
+  { id: 73, spanish:'leer', english:'to read' },
+  { id: 74, spanish:'comprender', english:'to understand' },
+  { id: 75, spanish:'aprender', english:'to learn' },
+  { id: 76, spanish:'beber', english:'to drink' },
+  { id: 77, spanish:'vender', english:'to sell' },
+  { id: 78, spanish:'correr', english:'to run' },
+  { id: 79, spanish:'depender', english:'to depend' },
+  { id: 80, spanish:'esconder', english:'to hide' },
+  { id: 81, spanish:'responder', english:'to respond' },
+  { id: 82, spanish:'deber', english:'to owe / must' },
+  { id: 83, spanish:'creer', english:'to believe' },
+  { id: 84, spanish:'defender', english:'to defend' },
+  { id: 85, spanish:'atender', english:'to attend to / to serve' },
+  { id: 86, spanish:'vivir', english:'to live' },
+  { id: 87, spanish:'subir', english:'to go up / to climb' },
+  { id: 88, spanish:'escribir', english:'to write' },
+  { id: 89, spanish:'recibir', english:'to receive' },
+  { id: 90, spanish:'decidir', english:'to decide' },
+  { id: 91, spanish:'compartir', english:'to share' },
+  { id: 92, spanish:'permitir', english:'to permit' },
+  { id: 93, spanish:'prohibir', english:'to prohibit' },
+  { id: 94, spanish:'descubrir', english:'to discover' },
+  { id: 95, spanish:'cubrir', english:'to cover' },
+  { id: 96, spanish:'describir', english:'to describe' },
+  { id: 97, spanish:'conducir', english:'to drive' },
+  { id: 98, spanish:'pensar (e→ie)', english:'to think' },
+  { id: 99, spanish:'perder (e→ie)', english:'to lose' },
+  { id:100, spanish:'sentir (e→ie)', english:'to feel' },
+  { id:101, spanish:'comenzar (e→ie)', english:'to begin' },
+  { id:102, spanish:'empezar (e→ie)', english:'to start' },
+  { id:103, spanish:'despertarse (e→ie)', english:'to wake up' },
+  { id:104, spanish:'sentarse (e→ie)', english:'to sit down' },
+  { id:105, spanish:'recomendar (e→ie)', english:'to recommend' },
+  { id:106, spanish:'querer (e→ie)', english:'to want' },
+  { id:107, spanish:'entender (e→ie)', english:'to understand' },
+  { id:108, spanish:'cerrar (e→ie)', english:'to close' },
+  { id:109, spanish:'preferir (e→ie)', english:'to prefer' },
+  { id:110, spanish:'mentir (e→ie)', english:'to lie' },
+  { id:111, spanish:'invertir (e→ie)', english:'to invest' },
+  { id:112, spanish:'divertirse (e→ie)', english:'to have fun / to enjoy oneself' },
+  { id:113, spanish:'encender (e→ie)', english:'to turn on' },
+  { id:114, spanish:'almorzar (o→ue)', english:'to have lunch' },
+  { id:115, spanish:'poder (o→ue)', english:'to be able to / can' },
+  { id:116, spanish:'dormir (o→ue)', english:'to sleep' },
+  { id:117, spanish:'recordar (o→ue)', english:'to remember' },
+  { id:118, spanish:'encontrar (o→ue)', english:'to find' },
+  { id:119, spanish:'mostrar (o→ue)', english:'to show' },
+  { id:120, spanish:'contar (o→ue)', english:'to count / to tell' },
+  { id:121, spanish:'volar (o→ue)', english:'to fly' },
+  { id:122, spanish:'costar (o→ue)', english:'to cost' },
+  { id:123, spanish:'acordar (o→ue)', english:'to agree' },
+  { id:124, spanish:'sonar (o→ue)', english:'to sound' },
+  { id:125, spanish:'soñar (o→ue)', english:'to dream' },
+  { id:126, spanish:'doler (o→ue)', english:'to hurt / to ache' },
+  { id:127, spanish:'llover (o→ue)', english:'to rain' },
+  { id:128, spanish:'morir (o→ue)', english:'to die' },
+  { id:129, spanish:'volver (o→ue)', english:'to return / to come back' },
+  { id:130, spanish:'jugar (u→ue)', english:'to play' },
+  { id:131, spanish:'servir (e→i)', english:'to serve' },
+  { id:132, spanish:'corregir (e→i)', english:'to correct' },
+  { id:133, spanish:'repetir (e→i)', english:'to repeat' },
+  { id:134, spanish:'vestir (e→i)', english:'to dress someone' },
+  { id:135, spanish:'vestirse (e→i)', english:'to get dressed' },
+  { id:136, spanish:'desvestirse (e→i)', english:'to undress' },
+  { id:137, spanish:'seguir (e→i)', english:'to follow' },
+  { id:138, spanish:'tener', english:'to have' },
+  { id:139, spanish:'desear', english:'to want / to wish' },
+  { id:140, spanish:'encontrarse (o→ue)', english:'to meet up with someone' },
+  { id:141, spanish:'volverse (o→ue)', english:'to become / to turn into' },
+  { id:142, spanish:'perder la cabeza', english:'to lose one\'s mind' },
+  { id:143, spanish:'estar de acuerdo', english:'to agree' },
+  { id:144, spanish:'levantar peso', english:'to lift weights' },
+  { id:145, spanish:'la talla', english:'size (clothing)' },
+  { id:146, spanish:'el pasatiempo', english:'hobby' },
+  { id:147, spanish:'la libra', english:'pound' },
+  { id:148, spanish:'la medianoche', english:'midnight' },
+  { id:149, spanish:'el almuerzo', english:'lunch' },
+  { id:150, spanish:'la cena', english:'dinner' },
+  { id:151, spanish:'el desayuno', english:'breakfast' },
+  { id:152, spanish:'la aceituna', english:'olive' },
+  { id:153, spanish:'la cebolla', english:'onion' },
+  { id:154, spanish:'la pimienta', english:'pepper (spice)' },
+  { id:155, spanish:'la ensalada', english:'salad' },
+  { id:156, spanish:'el queso feta', english:'feta cheese' },
+  { id:157, spanish:'el pepinillo', english:'cucumber / pickle' },
+  { id:158, spanish:'el olor', english:'smell' },
+  { id:159, spanish:'el sabor', english:'flavor' },
+  { id:160, spanish:'el impuesto', english:'tax' },
+  { id:161, spanish:'el museo', english:'museum' },
+  { id:162, spanish:'el desfile', english:'parade' },
+  { id:163, spanish:'los huevos', english:'eggs' },
+  { id:164, spanish:'las peras', english:'pears' },
+  { id:165, spanish:'el invierno', english:'winter' },
+  { id:166, spanish:'la primavera', english:'spring' },
+  { id:167, spanish:'el verano', english:'summer' },
+  { id:168, spanish:'el otoño', english:'fall / autumn' },
+  { id:169, spanish:'el gimnasio', english:'gym' },
+  { id:170, spanish:'las gradas', english:'stands / bleachers' },
+  { id:171, spanish:'las escaleras', english:'stairs' },
+  { id:172, spanish:'la bolsa de valores', english:'stock market' },
+  { id:173, spanish:'el centavo', english:'cent' },
+  { id:174, spanish:'la entrevista', english:'interview' },
+  { id:175, spanish:'la amenaza', english:'threat' },
+  { id:176, spanish:'la fábula', english:'fable' },
+  { id:177, spanish:'el consejo', english:'advice' },
+  { id:178, spanish:'el centro colonial', english:'colonial downtown' },
+  { id:179, spanish:'el teleférico', english:'cable car' },
+  { id:180, spanish:'el comercio', english:'trade / commerce' },
+  { id:181, spanish:'el arancel', english:'tariff' },
+  { id:182, spanish:'el embajador / la embajadora', english:'ambassador' },
+  { id:183, spanish:'el propósito', english:'purpose' },
+  { id:184, spanish:'el chiste', english:'joke' },
+  { id:185, spanish:'el cuento', english:'tale / short story' },
+  { id:186, spanish:'el miedo', english:'fear' },
+  { id:187, spanish:'el horario', english:'schedule' },
+  { id:188, spanish:'las gafas de sol', english:'sunglasses' },
+  { id:189, spanish:'la distancia', english:'distance' },
+  { id:190, spanish:'la velocidad', english:'speed' },
+  { id:191, spanish:'la res', english:'beef' },
+  { id:192, spanish:'el cordero', english:'lamb' },
+  { id:193, spanish:'el cuy', english:'guinea pig' },
+  { id:194, spanish:'la mantequilla', english:'butter' },
+  { id:195, spanish:'la harina', english:'flour' },
+  { id:196, spanish:'la vainilla', english:'vanilla' },
+  { id:197, spanish:'la piña', english:'pineapple' },
+  { id:198, spanish:'el camote', english:'sweet potato' },
+  { id:199, spanish:'la avena', english:'oatmeal' },
+  { id:200, spanish:'la desnutrición', english:'malnutrition' },
+  { id:201, spanish:'el dolor', english:'pain' },
+  { id:202, spanish:'la muerte', english:'death' },
+  { id:203, spanish:'el ataque de corazón', english:'heart attack' },
+  { id:204, spanish:'el cáncer de pulmón', english:'lung cancer' },
+  { id:205, spanish:'la contaminación', english:'pollution / contamination' },
+  { id:206, spanish:'el humo', english:'smog / smoke' },
+  { id:207, spanish:'la lluvia', english:'rain' },
+  { id:208, spanish:'la naturaleza', english:'nature' },
+  { id:209, spanish:'el humor', english:'mood' },
+  { id:210, spanish:'el experimento', english:'experiment' },
+  { id:211, spanish:'la medalla', english:'medal' },
+  { id:212, spanish:'el concierto', english:'concert / performance' },
+  { id:213, spanish:'la campana', english:'bell' },
+  { id:214, spanish:'el refugiado / la refugiada', english:'refugee' },
+  { id:215, spanish:'el Medio Oriente', english:'the Middle East' },
+  { id:216, spanish:'la Unión Soviética', english:'the Soviet Union' },
+  { id:217, spanish:'el mestizo / la mestiza', english:'person of mixed Indigenous and European ancestry' },
+  { id:218, spanish:'el dolor de estómago', english:'stomachache' },
+  { id:219, spanish:'las piernas', english:'legs' },
+  { id:220, spanish:'los brazos', english:'arms' },
+  { id:221, spanish:'la cabeza', english:'head' },
+  { id:222, spanish:'el estómago', english:'stomach' },
+  { id:223, spanish:'la prima / el primo', english:'cousin' },
+  { id:224, spanish:'el bachillerato', english:'high school / baccalaureate' },
+  { id:225, spanish:'la peluquera / el peluquero', english:'hairdresser' },
+  { id:226, spanish:'el pelo / el cabello', english:'hair' },
+  { id:227, spanish:'la línea aérea', english:'airline' },
+  { id:228, spanish:'templado / templada', english:'lukewarm / mild' },
+  { id:229, spanish:'tibio / tibia', english:'lukewarm / warm' },
+  { id:230, spanish:'frío / fría', english:'cold' },
+  { id:231, spanish:'caliente', english:'hot' },
+  { id:232, spanish:'saludable', english:'healthy' },
+  { id:233, spanish:'sucio / sucia', english:'dirty' },
+  { id:234, spanish:'antiguo / antigua', english:'ancient / old' },
+  { id:235, spanish:'depresivo / depresiva', english:'depressive' },
+  { id:236, spanish:'enojado / enojada', english:'angry' },
+  { id:237, spanish:'seguro / segura', english:'safe / sure' },
+  { id:238, spanish:'perezoso / perezosa', english:'lazy' },
+  { id:239, spanish:'chino / china', english:'Chinese' },
+  { id:240, spanish:'asado / asada', english:'roasted' },
+  { id:241, spanish:'barato / barata', english:'cheap' },
+  { id:242, spanish:'grasoso / grasosa', english:'greasy' },
+  { id:243, spanish:'justo / justa', english:'fair' },
+  { id:244, spanish:'muchas veces', english:'many times / often' },
+  { id:245, spanish:'algunas veces', english:'sometimes' },
+  { id:246, spanish:'raramente', english:'rarely' },
+  { id:247, spanish:'frecuentemente', english:'frequently' },
+  { id:248, spanish:'adelante', english:'forward / ahead / onwards' },
+  { id:249, spanish:'lejos', english:'far away' },
+  { id:250, spanish:'mejor', english:'better' },
+  { id:251, spanish:'un poco mejor', english:'a little better' },
+  { id:252, spanish:'mucho mejor', english:'much better' },
+  { id:253, spanish:'lo mismo', english:'the same thing' },
+  { id:254, spanish:'sobre', english:'about / over' },
+  { id:255, spanish:'aunque', english:'although' },
+  { id:256, spanish:'fuera de la ciudad', english:'out of town' },
+  { id:257, spanish:'depende de', english:'it depends on' },
+  { id:258, spanish:'se permite', english:'it is permitted' },
+  { id:259, spanish:'se prohíbe', english:'it is prohibited' },
+  { id:260, spanish:'yo pienso que', english:'I think that' },
+  { id:261, spanish:'me gustaría', english:'I would like' },
+  { id:262, spanish:'tengo pereza', english:'I feel lazy' },
+  { id:263, spanish:'me duele la cabeza', english:'my head hurts' },
+  { id:264, spanish:'me duelen las piernas', english:'my legs hurt' },
+  { id:265, spanish:'no sé qué va a pasar', english:'I don\'t know what\'s going to happen' },
+  { id:266, spanish:'la mayoría es cristiana', english:'the majority is Christian' },
+  { id:267, spanish:'primer grado', english:'first grade' },
+  { id:268, spanish:'el calor', english:'heat' },
+  { id:269, spanish:'la ciencia ficción', english:'science fiction' },
+  { id:270, spanish:'el/la adolescente', english:'teenager' },
+  { id:271, spanish:'vegetales / verduras', english:'vegetables' },
+  { id:272, spanish:'el ajedrez', english:'chess' },
+];
+
+let cards = [], current = null, flipped = false;
+let direction = Math.random() > 0.5 ? 'spanish_first' : 'english_first';
+let autoSpeak = false, animating = false, sessionCount = 0;
+let answerResult = null;
+
+// ── Speech Recognition ────────────────────────────────────────────────────────
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false, transcriptAccum = '';
+
+if (!SR) {
+  document.getElementById('no-sr-banner').style.display = 'block';
+  document.getElementById('mic-btn').style.display = 'none';
+}
+
+function toggleMic() { listening ? stopListening() : startListening(); }
+
+function startListening() {
+  if (!SR || !current) return;
+  if (rec) { try { rec.abort(); } catch(e){} }
+  transcriptAccum = '';
+  const ansLang = direction === 'spanish_first' ? 'en-US' : 'es-ES';
+  rec = new SR();
+  rec.lang = ansLang;
+  rec.interimResults = true;
+  rec.continuous = false;
+  rec.maxAlternatives = 1;
+  rec.onstart = () => {
+    listening = true;
+    const btn = document.getElementById('mic-btn');
+    btn.classList.add('listening');
+    btn.textContent = '⏹';
+    document.getElementById('listen-panel').classList.add('show');
+    document.getElementById('result-panel').classList.remove('show');
+    clearAnswerInput();
+  };
+  rec.onresult = (e) => {
+    let full = '';
+    for (let i = 0; i < e.results.length; i++) full += e.results[i][0].transcript;
+    transcriptAccum = full;
+    document.getElementById('listen-transcript').textContent = full || '…';
+  };
+  rec.onerror = (e) => {
+    console.warn('SR error:', e.error);
+    stopListening();
+    if (e.error === 'not-allowed') showToast('Mic access denied', '#d94f4f');
+  };
+  rec.onend = () => {
+    listening = false;
+    const btn = document.getElementById('mic-btn');
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+    document.getElementById('listen-label').textContent = 'You said';
+    const spoken = transcriptAccum.trim();
+    if (!spoken || !current) return;
+    const target = direction === 'spanish_first' ? current.english : current.spanish;
+    const lang   = direction === 'spanish_first' ? 'en' : 'es';
+    const score  = scoreMatch(spoken, target);
+    const bucket = score >= 0.85 ? 'know' : score >= 0.5 ? 'more_practice' : 'dont_know';
+    const msg    = score >= 0.85 ? '¡Perfecto! ✓' : score >= 0.5 ? '¡Casi! ~' : 'Not quite ✗';
+    answerResult = { bucket, score, target, input: spoken };
+    showResultPanel(msg, score, target, '"' + spoken + '"', lang);
+    showFlipped();
+    highlightRateBtn(bucket);
+  };
+  try { rec.start(); } catch(e) { console.warn('SR start failed', e); }
+}
+
+function stopListening() {
+  if (rec) { try { rec.stop(); } catch(e){} }
+  listening = false;
+  const btn = document.getElementById('mic-btn');
+  btn.classList.remove('listening');
+  btn.textContent = '🎤';
+}
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
+function cleanForSpeech(text) {
+  // Remove anything in parentheses (stem-change notes, gender notes, etc.)
+  return text.replace(/\s*\([^)]*\)/g, '').replace(/\s*\[[^\]]*\]/g, '').trim();
+}
+
+function spellDiagnose(input, target) {
+  // Returns a hint string or null if perfect
+  const inp = input.trim();
+  const tgt = target.trim();
+
+  // Check each word individually for more granular feedback
+  // First check the whole phrase
+  if (inp === tgt) return null; // perfect
+
+  const inpNoAccent = inp.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const tgtNoAccent = tgt.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const inpLower = inp.toLowerCase();
+  const tgtLower = tgt.toLowerCase();
+  const inpNoAccentLower = inpNoAccent.toLowerCase();
+  const tgtNoAccentLower = tgtNoAccent.toLowerCase();
+
+  if (inpLower === tgtLower) return null; // case only — treat as correct, no hint needed
+
+  // Accent only — correct letters, wrong or missing accents
+  if (inpNoAccentLower === tgtNoAccentLower) {
+    // Find which accents are missing/wrong
+    const hints = [];
+    for (let i = 0; i < tgt.length; i++) {
+      const tc = tgt[i], ic = inp[i] || '';
+      if (tc !== ic && tc.normalize('NFD').replace(/[̀-ͯ]/g,'') === (ic || tc).normalize('NFD').replace(/[̀-ͯ]/g,'')) {
+        hints.push('"' + tc + '" not "' + ic + '"');
+      }
+    }
+    if (hints.length) return '⚠ Accent: ' + hints.join(', ');
+    return '⚠ Check accents';
+  }
+
+  // Word-level diagnosis for multi-word answers
+  const inpWords = inpLower.split(/\s+/);
+  const tgtWords = tgtLower.split(/\s+/);
+  const inpWordsNoAcc = inpNoAccentLower.split(/\s+/);
+  const tgtWordsNoAcc = tgtNoAccentLower.split(/\s+/);
+
+  const wordHints = [];
+  const maxLen = Math.max(inpWords.length, tgtWords.length);
+  for (let i = 0; i < maxLen; i++) {
+    const iw = inpWords[i] || '(missing)';
+    const tw = tgtWords[i] || '';
+    const iwna = inpWordsNoAcc[i] || '';
+    const twna = tgtWordsNoAcc[i] || '';
+    if (iw === tw) continue;
+    if (iwna === twna) {
+      wordHints.push('⚠ Accent on "' + tw + '"');
+    } else if (tw && levenshtein(iw, tw) <= 2) {
+      wordHints.push('✏ Spelling: "' + iw + '" → "' + tw + '"');
+    } else if (tw) {
+      wordHints.push('✗ Wrong word: "' + iw + '" (expected "' + tw + '")');
+    } else {
+      wordHints.push('✗ Extra word: "' + iw + '"');
+    }
+  }
+  return wordHints.length ? wordHints.join(' · ') : null;
+}
+
+function levenshtein(a, b) {
+  const dp = Array.from({length: a.length + 1}, (_, i) =>
+    Array.from({length: b.length + 1}, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+  );
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[a.length][b.length];
+}
+
+// ── Hybrid Conjugation Engine ─────────────────────────────────────────────────
+// Returns conjugated form or null if it needs API fallback
+
+const IRREG_PRETERITE = {
+  ser:  { yo:'fui', tú:'fuiste', 'él/ella':'fue', nosotros:'fuimos', 'ellos/ellas':'fueron' },
+  ir:   { yo:'fui', tú:'fuiste', 'él/ella':'fue', nosotros:'fuimos', 'ellos/ellas':'fueron' },
+  tener:{ yo:'tuve', tú:'tuviste', 'él/ella':'tuvo', nosotros:'tuvimos', 'ellos/ellas':'tuvieron' },
+  estar:{ yo:'estuve', tú:'estuviste', 'él/ella':'estuvo', nosotros:'estuvimos', 'ellos/ellas':'estuvieron' },
+  hacer:{ yo:'hice', tú:'hiciste', 'él/ella':'hizo', nosotros:'hicimos', 'ellos/ellas':'hicieron' },
+  poder:{ yo:'pude', tú:'pudiste', 'él/ella':'pudo', nosotros:'pudimos', 'ellos/ellas':'pudieron' },
+  poner:{ yo:'puse', tú:'pusiste', 'él/ella':'puso', nosotros:'pusimos', 'ellos/ellas':'pusieron' },
+  querer:{ yo:'quise', tú:'quisiste', 'él/ella':'quiso', nosotros:'quisimos', 'ellos/ellas':'quisieron' },
+  saber:{ yo:'supe', tú:'supiste', 'él/ella':'supo', nosotros:'supimos', 'ellos/ellas':'supieron' },
+  venir:{ yo:'vine', tú:'viniste', 'él/ella':'vino', nosotros:'vinimos', 'ellos/ellas':'vinieron' },
+  decir:{ yo:'dije', tú:'dijiste', 'él/ella':'dijo', nosotros:'dijimos', 'ellos/ellas':'dijeron' },
+  traer:{ yo:'traje', tú:'trajiste', 'él/ella':'trajo', nosotros:'trajimos', 'ellos/ellas':'trajeron' },
+  dar:  { yo:'di', tú:'diste', 'él/ella':'dio', nosotros:'dimos', 'ellos/ellas':'dieron' },
+  ver:  { yo:'vi', tú:'viste', 'él/ella':'vio', nosotros:'vimos', 'ellos/ellas':'vieron' },
+  conducir:{ yo:'conduje', tú:'condujiste', 'él/ella':'condujo', nosotros:'condujimos', 'ellos/ellas':'condujeron' },
+};
+
+const IRREG_FUTURE_STEMS = {
+  tener:'tendr', poder:'podr', saber:'sabr', poner:'pondr',
+  venir:'vendr', salir:'saldr', hacer:'har', decir:'dir',
+  querer:'querr', haber:'habr', caber:'cabr', valer:'valdr',
+};
+
+const IRREG_PRESENT = {
+  ser:  { yo:'soy', tú:'eres', 'él/ella':'es', nosotros:'somos', 'ellos/ellas':'son' },
+  ir:   { yo:'voy', tú:'vas', 'él/ella':'va', nosotros:'vamos', 'ellos/ellas':'van' },
+  estar:{ yo:'estoy', tú:'estás', 'él/ella':'está', nosotros:'estamos', 'ellos/ellas':'están' },
+  tener:{ yo:'tengo', tú:'tienes', 'él/ella':'tiene', nosotros:'tenemos', 'ellos/ellas':'tienen' },
+  hacer:{ yo:'hago', tú:'haces', 'él/ella':'hace', nosotros:'hacemos', 'ellos/ellas':'hacen' },
+  decir:{ yo:'digo', tú:'dices', 'él/ella':'dice', nosotros:'decimos', 'ellos/ellas':'dicen' },
+  venir:{ yo:'vengo', tú:'vienes', 'él/ella':'viene', nosotros:'venemos', 'ellos/ellas':'vienen' },
+  poder:{ yo:'puedo', tú:'puedes', 'él/ella':'puede', nosotros:'podemos', 'ellos/ellas':'pueden' },
+  saber:{ yo:'sé', tú:'sabes', 'él/ella':'sabe', nosotros:'sabemos', 'ellos/ellas':'saben' },
+  poner:{ yo:'pongo', tú:'pones', 'él/ella':'pone', nosotros:'ponemos', 'ellos/ellas':'ponen' },
+  salir:{ yo:'salgo', tú:'sales', 'él/ella':'sale', nosotros:'salimos', 'ellos/ellas':'salen' },
+  ver:  { yo:'veo', tú:'ves', 'él/ella':'ve', nosotros:'vemos', 'ellos/ellas':'ven' },
+  dar:  { yo:'doy', tú:'das', 'él/ella':'da', nosotros:'damos', 'ellos/ellas':'dan' },
+  conducir:{ yo:'conduzco', tú:'conduces', 'él/ella':'conduce', nosotros:'conducimos', 'ellos/ellas':'conducen' },
+};
+
+function parseStemChange(verbSpanish) {
+  // Extract stem change from notation like "pensar (e→ie)"
+  const m = verbSpanish.match(/\(([aeiou])→([aeiou]{1,2})\)/);
+  return m ? { from: m[1], to: m[2] } : null;
+}
+
+function getInfinitive(verbSpanish) {
+  // Strip parenthetical notes and reflexive
+  return verbSpanish.replace(/\s*\([^)]*\)/g, '').trim();
+}
+
+function applyStemChange(stem, change) {
+  if (!change) return stem;
+  // Apply from last occurrence (not nosotros/vosotros forms)
+  const lastIdx = stem.lastIndexOf(change.from);
+  if (lastIdx === -1) return stem;
+  return stem.slice(0, lastIdx) + change.to + stem.slice(lastIdx + change.from.length);
+}
+
+function conjugateHybrid(verbSpanish, pronoun, tense) {
+  const inf = getInfinitive(verbSpanish).toLowerCase();
+  const isReflexive = inf.endsWith('rse') || inf.endsWith('erse') || inf.endsWith('irse') || inf.endsWith('arse');
+  const base = isReflexive ? inf.replace(/se$/, '') : inf;
+  const reflexSuffix = { yo:'me', tú:'te', 'él/ella':'se', nosotros:'nos', 'ellos/ellas':'se' };
+
+  const endAR = base.endsWith('ar');
+  const endER = base.endsWith('er');
+  const endIR = base.endsWith('ir');
+  if (!endAR && !endER && !endIR) return null; // not a standard infinitive
+
+  const stem = base.slice(0, -2);
+  const sc   = parseStemChange(verbSpanish);
+
+  let form = null;
+
+  if (tense === 'present') {
+    // Check full irregulars first
+    if (IRREG_PRESENT[base]) {
+      form = IRREG_PRESENT[base][pronoun];
+    } else {
+      const endings = {
+        ar: { yo:'o', tú:'as', 'él/ella':'a', nosotros:'amos', 'ellos/ellas':'an' },
+        er: { yo:'o', tú:'es', 'él/ella':'e', nosotros:'emos', 'ellos/ellas':'en' },
+        ir: { yo:'o', tú:'es', 'él/ella':'e', nosotros:'imos', 'ellos/ellas':'en' },
+      };
+      const type = endAR ? 'ar' : endER ? 'er' : 'ir';
+      const ending = endings[type][pronoun];
+      // Apply stem change (not nosotros)
+      const useSC = sc && pronoun !== 'nosotros';
+      const finalStem = useSC ? applyStemChange(stem, sc) : stem;
+      form = finalStem + ending;
+    }
+  }
+
+  else if (tense === 'preterite') {
+    // Full irregulars
+    if (IRREG_PRETERITE[base]) {
+      form = IRREG_PRETERITE[base][pronoun];
+    }
+    // Stem-changing IR verbs in preterite: only él/ella and ellos/ellas change (e→i or o→u)
+    else if (sc && endIR) {
+      // Normalize: e→ie or e→i both become e→i in preterite; o→ue becomes o→u
+      const pretSC = sc.to.startsWith('ie') ? { from: sc.from, to: 'i' }
+                   : sc.to === 'ue' ? { from: 'o', to: 'u' }
+                   : sc;
+      const endings = {
+        ar: { yo:'é', tú:'aste', 'él/ella':'ó', nosotros:'amos', 'ellos/ellas':'aron' },
+        ir: { yo:'í', tú:'iste', 'él/ella':'ió', nosotros:'imos', 'ellos/ellas':'ieron' },
+      };
+      const useSC = ['él/ella','ellos/ellas'].includes(pronoun);
+      const finalStem = useSC ? applyStemChange(stem, pretSC) : stem;
+      form = finalStem + endings.ir[pronoun];
+    }
+    // Regular AR preterite (AR stem-changers are regular in preterite)
+    else if (endAR) {
+      const endings = { yo:'é', tú:'aste', 'él/ella':'ó', nosotros:'amos', 'ellos/ellas':'aron' };
+      // Spelling changes: car→qué, gar→gué, zar→cé
+      let finalStem = stem;
+      if (pronoun === 'yo') {
+        if (stem.endsWith('c')) finalStem = stem.slice(0,-1) + 'qu';
+        else if (stem.endsWith('g')) finalStem = stem + 'u';
+        else if (stem.endsWith('z')) finalStem = stem.slice(0,-1) + 'c';
+      }
+      form = finalStem + endings[pronoun];
+    }
+    // Regular ER/IR preterite (non-stem-changing)
+    else if (endER || endIR) {
+      const endings = { yo:'í', tú:'iste', 'él/ella':'ió', nosotros: endER ? 'imos' : 'imos', 'ellos/ellas':'ieron' };
+      form = stem + endings[pronoun];
+    }
+  }
+
+  else if (tense === 'future') {
+    // Irregular future stems
+    const futureStem = IRREG_FUTURE_STEMS[base] || base;
+    const endings = { yo:'é', tú:'ás', 'él/ella':'á', nosotros:'emos', 'ellos/ellas':'án' };
+    form = futureStem + endings[pronoun];
+  }
+
+  if (!form) return null;
+
+  // Add reflexive pronoun
+  if (isReflexive) form = reflexSuffix[pronoun] + ' ' + form;
+  return form;
+}
+
+const VOICE_KEY_ES = 'flashcard-voice-es';
+const VOICE_KEY_EN = 'flashcard-voice-en';
+
+function getSavedVoice(lang) {
+  try {
+    const saved = localStorage.getItem(lang === 'es' ? VOICE_KEY_ES : VOICE_KEY_EN);
+    if (!saved) return null;
+    const voices = window.speechSynthesis.getVoices();
+    return voices.find(v => v.name === saved) || null;
+  } catch { return null; }
+}
+
+function speak(text, lang) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  text = cleanForSpeech(text);
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang === 'es' ? 'es-ES' : 'en-US';
+  utt.rate = 0.88;
+  const saved = getSavedVoice(lang);
+  if (saved) {
+    utt.voice = saved;
+  } else {
+    const voices = window.speechSynthesis.getVoices();
+    const pref = voices.find(v => v.lang.startsWith(lang === 'es' ? 'es' : 'en') && !v.name.toLowerCase().includes('google'));
+    if (pref) utt.voice = pref;
+  }
+  window.speechSynthesis.speak(utt);
+}
+function speakFront() { if (!current) return; speak(direction==='spanish_first'?current.spanish:current.english, direction==='spanish_first'?'es':'en'); }
+function speakBack()  { if (!current) return; speak(direction==='spanish_first'?current.english:current.spanish, direction==='spanish_first'?'en':'es'); }
+
+function loadVoices() {
+  const esSelect = document.getElementById('voice-es-select');
+  const enSelect = document.getElementById('voice-en-select');
+  if (!esSelect || !enSelect) return;
+  const voices = window.speechSynthesis.getVoices();
+  const savedEs = localStorage.getItem(VOICE_KEY_ES) || '';
+  const savedEn = localStorage.getItem(VOICE_KEY_EN) || '';
+  // Populate ES
+  esSelect.innerHTML = '<option value="">— auto-select —</option>';
+  voices.filter(v => v.lang.startsWith('es')).forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name; opt.textContent = v.name + ' (' + v.lang + ')';
+    if (v.name === savedEs) opt.selected = true;
+    esSelect.appendChild(opt);
+  });
+  esSelect.value = savedEs;
+  // Populate EN
+  enSelect.innerHTML = '<option value="">— auto-select —</option>';
+  voices.filter(v => v.lang.startsWith('en')).forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name; opt.textContent = v.name + ' (' + v.lang + ')';
+    if (v.name === savedEn) opt.selected = true;
+    enSelect.appendChild(opt);
+  });
+  enSelect.value = savedEn;
+}
+window.speechSynthesis.onvoiceschanged = loadVoices;
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cards)); } catch(e){} }
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    cards = raw ? JSON.parse(raw) : DEFAULT_CARDS.map(c=>({...c,bucket:'dont_know'}));
+    if (!cards.length) cards = DEFAULT_CARDS.map(c=>({...c,bucket:'dont_know'}));
+  } catch(e) { cards = DEFAULT_CARDS.map(c=>({...c,bucket:'dont_know'})); }
+}
+
+// ── Pick next ─────────────────────────────────────────────────────────────────
+function weightedPick(excludeId) {
+  const pool = [];
+  for (const c of cards) {
+    if (c.id === excludeId && cards.length > 1) continue;
+    const w = WEIGHTS[c.bucket] ?? 6;
+    for (let i = 0; i < w; i++) pool.push(c);
+  }
+  if (!pool.length) return cards[0] || null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function pickNext(excludeId) {
+  current = weightedPick(excludeId);
+  flipped = false; answerResult = null;
+  renderCard(); clearAnswerInput();
+  document.getElementById('listen-panel').classList.remove('show');
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('rate-btns').classList.remove('enabled');
+  resetAllRateBtns();
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderCard() {
+  if (!current) return;
+  const front = direction==='spanish_first'?current.spanish:current.english;
+  const back  = direction==='spanish_first'?current.english:current.spanish;
+  const fl    = direction==='spanish_first'?'Español':'English';
+  const bl    = direction==='spanish_first'?'English':'Español';
+
+  const cardEl = document.getElementById('card');
+  cardEl.classList.toggle('flipped', flipped);
+  document.getElementById('card-lang-label').textContent = flipped ? bl : fl;
+  const textEl = document.getElementById('card-text');
+  textEl.textContent = flipped ? back : front;
+  textEl.style.fontSize = flipped ? '24px' : '38px';
+  textEl.style.color = flipped ? 'var(--textMid)' : 'var(--text)';
+  document.getElementById('card-hint').style.display = flipped ? 'none' : 'block';
+
+  const bel = document.getElementById('card-bucket-label');
+  bel.textContent = current.bucket !== 'dont_know' ? BUCKET_LABELS[current.bucket] : '';
+  bel.style.color = BUCKET_COLORS[current.bucket] || '';
+
+  const speakBtn = document.querySelector('#card-speak button');
+  speakBtn.onclick = (e) => { e.stopPropagation(); flipped ? speakBack() : speakFront(); };
+
+  const ph = direction==='spanish_first'?'Type the English translation':'Escribe la traducción';
+  document.getElementById('answer-input').placeholder = ph;
+  renderProgress();
+}
+
+function renderProgress() {
+  const cnt = {
+    dont_know:     cards.filter(c=>c.bucket==='dont_know').length,
+    more_practice: cards.filter(c=>c.bucket==='more_practice').length,
+    know:          cards.filter(c=>c.bucket==='know').length,
+  };
+  ['dont','more','know'].forEach((k,i) => {
+    const bucket = ['dont_know','more_practice','know'][i];
+    const el = document.getElementById('pb-'+k);
+    el.style.flex = cnt[bucket] || 0;
+    el.style.minWidth = cnt[bucket] > 0 ? '4px' : '0';
+    document.getElementById('lbl-'+k).textContent = cnt[bucket];
+  });
+  document.getElementById('total-label').textContent = cards.length + ' cards';
+  document.getElementById('session-count').textContent = sessionCount;
+  const dirLabel = direction==='spanish_first'?'Español → English':'English → Español';
+  document.getElementById('header-sub').textContent = dirLabel;
+}
+
+function renderManage() {
+  const el = document.getElementById('manage-content');
+  el.innerHTML = '';
+  if (!cards.length) {
+    el.innerHTML = '<div style="color:var(--textLight);font-style:italic;text-align:center;margin-top:40px">No cards yet.</div>';
+    return;
+  }
+  ['dont_know','more_practice','know'].forEach(bucket => {
+    const bc = cards.filter(c=>c.bucket===bucket);
+    if (!bc.length) return;
+    const sec = document.createElement('div');
+    sec.className = 'bucket-section';
+    const hdr = document.createElement('div');
+    hdr.className = 'bucket-header';
+    hdr.style.color = BUCKET_COLORS[bucket];
+    hdr.style.borderBottomColor = BUCKET_COLORS[bucket]+'30';
+    hdr.textContent = BUCKET_LABELS[bucket] + ' (' + bc.length + ')';
+    sec.appendChild(hdr);
+    bc.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'card-row';
+      if (editingCardId === c.id) {
+        row.style.borderColor = 'var(--accent)';
+        row.innerHTML = `
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input id="edit-spanish-${c.id}" value="${esc(c.spanish)}" autocorrect="off" autocapitalize="off"
+              style="background:#faf8f4;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;font-style:italic;color:var(--text);outline:none"/>
+            <input id="edit-english-${c.id}" value="${esc(c.english)}" autocorrect="off"
+              style="background:#faf8f4;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--textMid);outline:none"/>
+            <div style="display:flex;gap:8px">
+              <button onclick="saveEditCard(${c.id})" style="flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px;font-family:inherit;font-size:13px;cursor:pointer;min-height:40px">Save</button>
+              <button onclick="cancelEdit()" style="flex:1;background:var(--surface);color:var(--textMid);border:1.5px solid var(--border);border-radius:8px;padding:10px;font-family:inherit;font-size:13px;cursor:pointer;min-height:40px">Cancel</button>
+            </div>
+          </div>`;
+      } else {
+        row.innerHTML = `
+          <div class="card-row-top">
+            <button class="icon-speak-btn" onclick="speak('${esc(c.spanish)}','es')">🔊</button>
+            <span class="spanish">${esc(c.spanish)}</span>
+            <span class="arrow">→</span>
+            <span class="english">${esc(c.english)}</span>
+            <button class="icon-speak-btn" onclick="speak('${esc(c.english)}','en')">🔊</button>
+          </div>
+          <div class="card-row-btns">
+            <button onclick="startEditCard(${c.id})" style="background:var(--surface);border:1.5px solid var(--border);color:var(--textMid);border-radius:4px;padding:4px 9px;font-family:inherit;font-size:10px;cursor:pointer;min-height:30px">✏ Edit</button>
+            ${Object.entries(BUCKET_LABELS).filter(([b])=>b!==bucket).map(([b,lbl])=>`
+              <button class="move-btn" style="border-color:${BUCKET_COLORS[b]}66;color:${BUCKET_COLORS[b]}"
+                onclick="moveBucket(${c.id},'${b}')">${lbl}</button>`).join('')}
+            <button class="del-btn" onclick="deleteCard(${c.id})">✕</button>
+          </div>`;
+      }
+      sec.appendChild(row);
+    });
+    el.appendChild(sec);
+  });
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────────
+function flipCard() {
+  if (animating || listening) return;
+  flipped = !flipped;
+  if (flipped) document.getElementById('rate-btns').classList.add('enabled');
+  renderCard();
+}
+function showFlipped() {
+  flipped = true;
+  document.getElementById('rate-btns').classList.add('enabled');
+  renderCard();
+}
+function rate(bucket) {
+  if (!current || animating) return;
+  stopListening(); animating = true;
+  const cardEl = document.getElementById('card');
+  cardEl.classList.add('animating');
+  current.bucket = bucket; save(); sessionCount++;
+  const msgs = { know:'¡Perfecto!', more_practice:'¡Casi!', dont_know:'¡Sigue así!' };
+  showToast(msgs[bucket], BUCKET_COLORS[bucket]);
+  setTimeout(() => {
+    cardEl.classList.remove('animating'); animating = false;
+    pickNext(current ? current.id : null);
+  }, 460);
+}
+
+function normalize(s) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
+}
+function scoreMatch(input, target) {
+  const a=normalize(input), b=normalize(target);
+  if (a===b) return 1;
+  const tw=b.split(/\s+/), iw=a.split(/\s+/);
+  return tw.filter(w=>iw.includes(w)).length / tw.length;
+}
+
+function onAnswerInput() {
+  const val = document.getElementById('answer-input').value.trim();
+  document.getElementById('check-btn').classList.toggle('ready', val.length > 0);
+}
+function onAnswerKey(e) { if (e.key==='Enter') checkAnswer(); }
+function clearAnswerInput() {
+  document.getElementById('answer-input').value = '';
+  document.getElementById('check-btn').classList.remove('ready');
+}
+function checkAnswer() {
+  const input = document.getElementById('answer-input').value.trim();
+  if (!input || !current) return;
+  stopListening();
+  const target = direction==='spanish_first'?current.english:current.spanish;
+  const lang   = direction==='spanish_first'?'en':'es';
+  const score  = scoreMatch(input, target);
+  const bucket = score>=0.85?'know':score>=0.5?'more_practice':'dont_know';
+  const msg    = score>=0.85?'¡Perfecto! ✓':score>=0.5?'¡Casi! ~':'Not quite ✗';
+  answerResult = { bucket, score, target, input };
+  document.getElementById('listen-panel').classList.remove('show');
+  showResultPanel(msg, score, target, '"'+input+'"', lang);
+  showFlipped(); highlightRateBtn(bucket);
+}
+
+function showResultPanel(msg, score, target, youSaid, targetLang) {
+  const panel = document.getElementById('result-panel');
+  panel.classList.add('show');
+  panel.style.borderColor = BUCKET_COLORS[answerResult.bucket]+'55';
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('result-msg').style.color = BUCKET_COLORS[answerResult.bucket];
+  document.getElementById('result-pct').textContent = Math.round(score*100)+'% match';
+  document.getElementById('result-target').textContent = target;
+  document.getElementById('result-you-said').textContent = 'You said: ' + youSaid;
+  // Spelling / accent hint
+  const hintEl = document.getElementById('result-hint');
+  const rawInput = youSaid.replace(/^"|"$/g, '');
+  const hint = spellDiagnose(rawInput, target);
+  if (hint && answerResult.bucket !== 'know') {
+    hintEl.textContent = hint;
+    // Color: orange for accent issues, red for spelling/wrong
+    hintEl.style.color = hint.startsWith('⚠') ? '#c87d1a' : '#d94f4f';
+    hintEl.style.display = 'block';
+  } else {
+    hintEl.style.display = 'none';
+  }
+  document.getElementById('result-speak-btn').onclick = () => speak(target, targetLang);
+}
+
+function highlightRateBtn(bucket) {
+  resetAllRateBtns();
+  const map = { dont_know:'btn-dont', more_practice:'btn-more', know:'btn-know' };
+  const btn = document.getElementById(map[bucket]);
+  if (btn) { btn.style.background=BUCKET_COLORS[bucket]+'14'; btn.style.borderColor=BUCKET_COLORS[bucket]; }
+}
+function resetAllRateBtns() {
+  [['btn-dont','dont_know'],['btn-more','more_practice'],['btn-know','know']].forEach(([id,b])=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='var(--surface)';el.style.borderColor=BUCKET_COLORS[b]+'55';}
+  });
+}
+
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((btn,i)=>{
+    btn.classList.toggle('active', ['study','manage','add','learn','conj','sync'][i]===v);
+  });
+  if (v==='manage') renderManage();
+  if (v==='learn') {
+    const dk = cards.filter(c=>c.bucket==='dont_know').length;
+    document.getElementById('learn-dont-count').textContent = 'Don\'t Know cards: ' + dk;
+    document.getElementById('learn-start-wrap').style.display = dk >= 2 ? 'block' : 'none';
+    document.getElementById('learn-question').style.display = 'none';
+    document.getElementById('learn-score').textContent = '';
+    learnQ = null;
+  }
+  window.scrollTo(0,0);
+}
+
+function toggleAutoSpeak() {
+  autoSpeak = !autoSpeak;
+  const btn = document.getElementById('auto-speak-btn');
+  btn.textContent = autoSpeak ? '🔊 Auto' : '🔇 Auto';
+  btn.classList.toggle('off', !autoSpeak);
+}
+
+function setDirection(d) {
+  direction = d;
+  document.getElementById('dir-es').classList.toggle('active', d==='spanish_first');
+  document.getElementById('dir-en').classList.toggle('active', d==='english_first');
+  renderCard();
+}
+
+function addCard() {
+  const spanish = document.getElementById('new-spanish').value.trim();
+  const english = document.getElementById('new-english').value.trim();
+  if (!spanish || !english) return;
+  cards.push({ id: Date.now(), spanish, english, bucket: 'dont_know' });
+  save();
+  document.getElementById('new-spanish').value = '';
+  document.getElementById('new-english').value = '';
+  showToast('Card added!', '#3a9e6a');
+  renderProgress();
+}
+
+function deleteCard(id) {
+  cards = cards.filter(c=>c.id!==id);
+  if (current?.id===id) { current=null; pickNext(id); }
+  save(); renderManage(); renderProgress();
+}
+function moveBucket(id, bucket) {
+  const c=cards.find(c=>c.id===id);
+  if(c) c.bucket=bucket;
+  save(); renderManage(); renderProgress();
+}
+
+let toastTimer;
+function showToast(msg, color) {
+  clearTimeout(toastTimer);
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.background=color; el.style.display='block';
+  toastTimer=setTimeout(()=>{el.style.display='none';},1600);
+}
+
+
+const DOC_ID = '1nt5EXN1RRxYHqw-8OQJIc9t3JEjm-370Je3fCnXeCLs';
+const API_KEY_STORAGE = 'flashcard-api-key';
+
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (key) localStorage.setItem(API_KEY_STORAGE, key);
+}
+
+function loadApiKey() {
+  const saved = localStorage.getItem(API_KEY_STORAGE) || '';
+  const el = document.getElementById('api-key-input');
+  if (el && saved) el.value = saved;
+}
+
+function setSyncStatus(msg, color) {
+  const el = document.getElementById('sync-status');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.className = 'sync-status';
+  el.style.background = color + '18';
+  el.style.border = '1.5px solid ' + color + '55';
+  el.style.color = color;
+}
+
+async function syncFromDoc() {
+  const apiKey  = document.getElementById('api-key-input').value.trim();
+  const docText = document.getElementById('doc-paste').value.trim();
+
+  if (!apiKey)  { setSyncStatus('Please enter your Anthropic API key above.', '#d94f4f'); return; }
+  if (!docText) { setSyncStatus('Please paste your vocabulary doc text above.', '#d94f4f'); return; }
+
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinning">⟳</span> Syncing…';
+  document.getElementById('sync-status').style.display = 'none';
+  document.getElementById('sync-review-wrap').style.display = 'none';
+
+  try {
+    // Collect existing Spanish terms to avoid duplicates
+    const existingSpanish = cards.map(c =>
+      c.spanish.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+    );
+
+    const prompt = `You are a Spanish vocabulary card generator.
+
+Here is the content of a Spanish vocabulary document:
+
+---
+${docText.slice(0, 16000)}
+---
+
+These Spanish terms already exist as flashcards — do NOT include them:
+${existingSpanish.join(', ')}
+
+Extract ALL Spanish vocabulary words, verbs, phrases, and expressions from the document that are NOT already in the existing list above.
+
+Use the document's section headers as context (e.g. "Grupo e→ie" tells you those verbs are stem-changers).
+
+For each new item produce a flashcard following these exact rules:
+
+SPANISH SIDE rules:
+- Nouns: always include the definite article (el/la/los/las). Feminine/masculine pairs where applicable: "el embajador / la embajadora". If the document doesn't indicate gender, infer it correctly.
+- Verbs: infinitive form only. For stem-changing verbs add the pattern in parentheses: "pensar (e→ie)", "dormir (o→ue)", "servir (e→i)", "jugar (u→ue)", "disminuir (i→y)". Infer stem-change from section headers if not explicitly stated. For reflexive verbs include -se suffix. Regular AR/ER/IR verbs: just the infinitive, no label.
+- Adjectives: masculine/feminine pair if it changes: "frío / fría", "sucio / sucia". If invariable, just the word.
+- Phrases: exactly as they appear in the document.
+
+ENGLISH SIDE rules:
+- Only the clean translation. NO grammar labels, NO "(stem-change...)", NO "(AR verb)", NO "(changes with gender)".
+- Add translations for any word that doesn't have one in the document — infer from context or standard Spanish.
+- For ser: "to be (permanent: identity, origin, profession — DOctor)"
+- For estar: "to be (temporary: position, location, emotion — PLACE)"
+- Otherwise just the plain meaning.
+
+Respond with ONLY a JSON array, no markdown, no explanation:
+[{"spanish": "...", "english": "..."}, ...]
+
+If there are no new words to add, return: []`;
+
+    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!apiRes.ok) {
+      const err = await apiRes.json().catch(() => ({}));
+      throw new Error(err?.error?.message || 'API error ' + apiRes.status);
+    }
+
+    const apiData = await apiRes.json();
+    const rawText = (apiData.content || []).find(b => b.type === 'text')?.text || '[]';
+    const clean = rawText.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+
+    let newVocab = [];
+    try { newVocab = JSON.parse(clean); } catch { newVocab = []; }
+
+    if (!Array.isArray(newVocab) || newVocab.length === 0) {
+      setSyncStatus('Already up to date — no new words found.', '#3a9e6a');
+    } else {
+      const reviewCards = newVocab.filter(v => v.spanish && v.english)
+        .map(v => ({ spanish: v.spanish.trim(), english: v.english.trim() }));
+      showPendingReview(reviewCards);
+    }
+
+  } catch(err) {
+    console.error(err);
+    setSyncStatus('Sync failed: ' + err.message, '#d94f4f');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔄&nbsp; Sync New Words';
+}
+
+
+
+function saveVoice(lang, name) {
+  localStorage.setItem(lang === 'es' ? VOICE_KEY_ES : VOICE_KEY_EN, name);
+  if (name) setTimeout(() => speak(lang === 'es' ? 'hola' : 'hello', lang), 100);
+}
+
+
+let conjMode = 'drill';
+
+function setConjMode(mode) {
+  conjMode = mode;
+  document.getElementById('mode-drill').classList.toggle('active', mode === 'drill');
+  document.getElementById('mode-ref').classList.toggle('active', mode === 'ref');
+  document.getElementById('tense-row').style.display = mode === 'drill' ? 'flex' : 'none';
+  document.getElementById('conj-ref').style.display = mode === 'ref' ? 'block' : 'none';
+  document.getElementById('conj-start-wrap').style.display = mode === 'drill' ? 'block' : 'none';
+  document.getElementById('conj-card').style.display = 'none';
+  document.getElementById('conj-answer-row').style.display = 'none';
+  document.getElementById('conj-result').classList.remove('show');
+  document.getElementById('conj-next-btn').style.display = 'none';
+  if (mode === 'ref') renderRefCard();
+}
+
+function renderRefCard() {
+  const el = document.getElementById('conj-ref');
+  const sections = [
+    { tense: 'Present Tense', color: '#3a9e6a', groups: [
+      { title: 'AR verbs (e.g. hablar)', rows: [['yo','habl-o'],['tú','habl-as'],['él/ella','habl-a'],['nosotros','habl-amos'],['ellos/ellas','habl-an']] },
+      { title: 'ER verbs (e.g. comer)', rows: [['yo','com-o'],['tú','com-es'],['él/ella','com-e'],['nosotros','com-emos'],['ellos/ellas','com-en']] },
+      { title: 'IR verbs (e.g. vivir)', rows: [['yo','viv-o'],['tú','viv-es'],['él/ella','viv-e'],['nosotros','viv-imos'],['ellos/ellas','viv-en']] },
+      { title: 'Stem changes (not nosotros)', rows: [['e→ie','pensar: pienso, piensas…'],['o→ue','poder: puedo, puedes…'],['e→i','servir: sirvo, sirves…'],['u→ue','jugar: juego, juegas…']] },
+    ]},
+    { tense: 'Preterite Tense', color: '#c87d1a', groups: [
+      { title: 'AR verbs', rows: [['yo','habl-é'],['tú','habl-aste'],['él/ella','habl-ó'],['nosotros','habl-amos'],['ellos/ellas','habl-aron']] },
+      { title: 'ER/IR verbs', rows: [['yo','com-í'],['tú','com-iste'],['él/ella','com-ió'],['nosotros','com-imos'],['ellos/ellas','com-ieron']] },
+      { title: 'Spelling changes (yo)', rows: [['car→qué','buscar→busqué'],['gar→gué','llegar→llegué'],['zar→cé','empezar→empecé']] },
+      { title: 'IR stem-changers (él, ellos)', rows: [['e→i','sentir: sintió, sintieron'],['o→u','dormir: durmió, durmieron']] },
+      { title: 'Common irregulars', rows: [['ser/ir','fui, fuiste, fue…'],['tener','tuve, tuviste, tuvo…'],['estar','estuve, estuviste, estuvo…'],['hacer','hice, hiciste, hizo…'],['poder','pude, pudiste, pudo…']] },
+    ]},
+    { tense: 'Future Tense', color: '#7a6ab5', groups: [
+      { title: 'All verbs (add to full infinitive)', rows: [['yo','-é'],['tú','-ás'],['él/ella','-á'],['nosotros','-emos'],['ellos/ellas','-án']] },
+      { title: 'Irregular stems', rows: [['tener','tendr-'],['poder','podr-'],['saber','sabr-'],['poner','pondr-'],['venir','vendr-'],['salir','saldr-'],['hacer','har-'],['decir','dir-'],['querer','querr-'],['haber','habr-']] },
+    ]},
+  ];
+
+  el.innerHTML = sections.map(({ tense, color, groups }) => `
+    <div style="margin-bottom:24px">
+      <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${color};margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid ${color}33">${tense}</div>
+      ${groups.map(({ title, rows }) => `
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--textMid);margin-bottom:6px;font-style:italic">${title}</div>
+          <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)">
+            ${rows.map(([lbl, val], i) => `
+              <div style="display:flex;padding:8px 14px;${i < rows.length-1 ? 'border-bottom:1px solid var(--border)' : ''};gap:12px">
+                <span style="width:90px;font-size:12px;color:var(--textLight);flex-shrink:0">${lbl}</span>
+                <span style="font-size:13px;font-style:italic;color:var(--text)">${val}</span>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── Sync review ──────────────────────────────────────────────────────────────
+let pendingCards = null;
+
+function showPendingReview(cards) {
+  pendingCards = cards.map(c => ({ ...c }));
+  renderPendingReview();
+  document.getElementById('sync-review-wrap').style.display = 'block';
+  document.getElementById('sync-status').textContent = `Found ${pendingCards.length} new card${pendingCards.length !== 1 ? 's' : ''} — review below.`;
+  document.getElementById('sync-status').style.color = 'var(--accent)';
+  document.getElementById('sync-status').style.background = 'var(--accentBg)';
+  document.getElementById('sync-status').style.borderColor = 'var(--accent)';
+  document.getElementById('sync-status').style.display = 'block';
+}
+
+function renderPendingReview() {
+  const el = document.getElementById('pending-list');
+  if (!pendingCards || !pendingCards.length) {
+    document.getElementById('sync-review-wrap').style.display = 'none';
+    return;
+  }
+  el.innerHTML = pendingCards.map((c, idx) => `
+    <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--shadow)">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input value="${esc(c.spanish)}" oninput="pendingCards[${idx}].spanish=this.value" autocorrect="off" autocapitalize="off"
+          style="flex:1;background:#faf8f4;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:14px;font-style:italic;color:var(--text);outline:none"/>
+        <input value="${esc(c.english)}" oninput="pendingCards[${idx}].english=this.value" autocorrect="off"
+          style="flex:1;background:#faf8f4;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:13px;color:var(--textMid);outline:none"/>
+        <button onclick="removePending(${idx})" style="background:none;border:none;color:#c06060;font-size:18px;cursor:pointer;padding:0 4px">✕</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('confirm-sync-btn').textContent = `Add All ${pendingCards.length} Cards →`;
+}
+
+function removePending(idx) {
+  pendingCards.splice(idx, 1);
+  renderPendingReview();
+}
+
+function confirmSync() {
+  if (!pendingCards || !pendingCards.length) return;
+  const maxId = cards.length ? Math.max(...cards.map(c => c.id)) : 0;
+  const added = pendingCards.filter(v => v.spanish && v.english)
+    .map((v, i) => ({ id: maxId + i + 1, spanish: v.spanish.trim(), english: v.english.trim(), bucket: 'dont_know' }));
+  cards.push(...added);
+  save(); renderProgress();
+  pendingCards = null;
+  document.getElementById('sync-review-wrap').style.display = 'none';
+  setSyncStatus(`Added ${added.length} card${added.length !== 1 ? 's' : ''}!`, '#3a9e6a');
+  showToast('+' + added.length + ' new cards!', '#3a9e6a');
+}
+
+// ── Learn mode ───────────────────────────────────────────────────────────────
+let learnQ = null;
+let learnScore = { correct: 0, total: 0 };
+
+function startLearn() {
+  learnScore = { correct: 0, total: 0 };
+  document.getElementById('learn-score').textContent = '';
+  nextLearnQuestion();
+}
+
+function nextLearnQuestion() {
+  const pool = cards.filter(c => c.bucket === 'dont_know');
+  if (pool.length < 2) {
+    document.getElementById('learn-start-wrap').style.display = 'block';
+    document.getElementById('learn-question').style.display = 'none';
+    return;
+  }
+  const card = pool[Math.floor(Math.random() * pool.length)];
+  const dir  = Math.random() > 0.5 ? 'es_to_en' : 'en_to_es';
+  const question = dir === 'es_to_en' ? card.spanish : card.english;
+  const answer   = dir === 'es_to_en' ? card.english : card.spanish;
+  const others   = cards.filter(c => c.id !== card.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  const wrongs   = others.map(c => dir === 'es_to_en' ? c.english : c.spanish);
+  const choices  = [...wrongs, answer].sort(() => Math.random() - 0.5);
+  learnQ = { card, dir, question, answer, choices };
+
+  document.getElementById('learn-start-wrap').style.display = 'none';
+  document.getElementById('learn-question').style.display = 'block';
+  document.getElementById('learn-next-btn').style.display = 'none';
+  document.getElementById('learn-dir-label').textContent = dir === 'es_to_en' ? 'Español → English' : 'English → Español';
+  document.getElementById('learn-q-text').textContent = question;
+
+  const choicesEl = document.getElementById('learn-choices');
+  choicesEl.innerHTML = choices.map((c, i) => `
+    <button onclick="pickLearnAnswer('${esc(c)}')" id="learn-choice-${i}"
+      style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:12px;padding:16px 20px;font-family:inherit;font-size:15px;font-style:italic;text-align:left;cursor:pointer;box-shadow:var(--shadow);min-height:54px;width:100%;margin-bottom:10px;transition:all 0.2s">
+      ${esc(c)}
+    </button>`).join('');
+}
+
+function pickLearnAnswer(choice) {
+  if (!learnQ) return;
+  const isCorrect = choice === learnQ.answer;
+  learnScore.total++;
+  if (isCorrect) learnScore.correct++;
+  document.getElementById('learn-score').textContent = learnScore.correct + '/' + learnScore.total + ' correct';
+
+  const choices = learnQ.choices;
+  choices.forEach((c, i) => {
+    const btn = document.getElementById('learn-choice-' + i);
+    if (!btn) return;
+    btn.onclick = null;
+    btn.style.cursor = 'default';
+    if (c === learnQ.answer) { btn.style.background = '#3a9e6a18'; btn.style.borderColor = '#3a9e6a'; btn.style.color = '#3a9e6a'; btn.innerHTML += ' ✓'; }
+    else if (c === choice && !isCorrect) { btn.style.background = '#d94f4f18'; btn.style.borderColor = '#d94f4f'; btn.style.color = '#d94f4f'; btn.innerHTML += ' ✗'; }
+  });
+  document.getElementById('learn-next-btn').style.display = 'block';
+}
+
+// ── Inline card editor ───────────────────────────────────────────────────────
+let editingCardId = null;
+
+function startEditCard(id) {
+  editingCardId = id;
+  renderManage();
+}
+
+function saveEditCard(id) {
+  const sp = document.getElementById('edit-spanish-' + id)?.value.trim();
+  const en = document.getElementById('edit-english-' + id)?.value.trim();
+  if (!sp || !en) return;
+  const c = cards.find(c => c.id === id);
+  if (c) { c.spanish = sp; c.english = en; }
+  save(); editingCardId = null; renderManage(); renderProgress();
+}
+
+function cancelEdit() { editingCardId = null; renderManage(); }
+
+// ── Conjugation mode ──────────────────────────────────────────────────────────
+let conjTense = 'present';
+let conjCurrentExercise = null;
+
+function selectTense(t) {
+  conjTense = t;
+  ['present','preterite','future'].forEach(x => {
+    document.getElementById('tense-'+x).classList.toggle('active', x===t);
+  });
+  resetConjExercise();
+}
+
+function resetConjExercise() {
+  conjCurrentExercise = null;
+  document.getElementById('conj-card').style.display = 'none';
+  document.getElementById('conj-answer-row').style.display = 'none';
+  document.getElementById('conj-result').classList.remove('show');
+  document.getElementById('conj-context').style.display = 'none';
+  document.getElementById('conj-next-btn').style.display = 'none';
+  document.getElementById('conj-start-wrap').style.display = 'block';
+  document.getElementById('conj-input').value = '';
+  document.getElementById('conj-check-btn').classList.remove('ready');
+}
+
+function getVerbsFromDeck() {
+  return cards.filter(c => /(?:ar|er|ir|arse|erse|irse)(?:\s*\([^)]*\))?$/i.test(c.spanish.trim()));
+}
+
+async function generateConjExercise() {
+  const verbs = getVerbsFromDeck();
+  if (!verbs.length) { showToast('No verbs in your deck yet!', '#d94f4f'); return; }
+
+  document.getElementById('conj-start-wrap').style.display = 'none';
+  document.getElementById('conj-card').style.display = 'none';
+  document.getElementById('conj-answer-row').style.display = 'none';
+  document.getElementById('conj-result').classList.remove('show');
+  document.getElementById('conj-next-btn').style.display = 'none';
+  document.getElementById('conj-input').value = '';
+  document.getElementById('conj-check-btn').classList.remove('ready');
+
+  const loadEl = document.getElementById('conj-loading');
+  loadEl.style.display = 'flex';
+
+  const pool = [];
+  for (const v of verbs) {
+    const w = WEIGHTS[v.bucket] ?? 6;
+    for (let i = 0; i < w; i++) pool.push(v);
+  }
+  const card     = pool[Math.floor(Math.random() * pool.length)];
+  const pronouns = ['yo', 'tú', 'él/ella', 'nosotros', 'ellos/ellas'];
+  const pronoun  = pronouns[Math.floor(Math.random() * pronouns.length)];
+  const tenseNames = { present: 'present tense', preterite: 'preterite (past) tense', future: 'future tense' };
+  const tenseName  = tenseNames[conjTense];
+
+  // Try hybrid engine first
+  const hybridAnswer = conjugateHybrid(card.spanish, pronoun, conjTense);
+
+  if (hybridAnswer) {
+    conjCurrentExercise = { verb: card.spanish, english: card.english, pronoun, tenseName, answer: hybridAnswer };
+    loadEl.style.display = 'none';
+    renderConjCard();
+    return;
+  }
+
+  // API fallback for genuinely irregular forms
+  try {
+    const apiKey = localStorage.getItem('flashcard-api-key') || '';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{ role: 'user', content: `Conjugate the Spanish verb "${card.spanish}" with pronoun "${pronoun}" in the ${tenseName}. Reply with ONLY the conjugated form, nothing else.` }]
+      })
+    });
+    const data = await res.json();
+    const answer = (data.content||[]).find(b=>b.type==='text')?.text?.trim().toLowerCase() || null;
+    conjCurrentExercise = { verb: card.spanish, english: card.english, pronoun, tenseName, answer };
+  } catch(e) {
+    conjCurrentExercise = { verb: card.spanish, english: card.english, pronoun, tenseName, answer: null };
+  }
+
+  loadEl.style.display = 'none';
+  renderConjCard();
+}
+
+function renderConjCard() {
+  const ex = conjCurrentExercise;
+  document.getElementById('conj-tense-label').textContent = ex.tenseName;
+  document.getElementById('conj-verb').textContent = cleanForSpeech(ex.verb);
+  document.getElementById('conj-english').textContent = '(' + ex.english + ')';
+  document.getElementById('conj-prompt').textContent = ex.pronoun + ' ___';
+  document.getElementById('conj-speak-verb').onclick = () => speak(cleanForSpeech(ex.verb), 'es');
+  document.getElementById('conj-card').style.display = 'block';
+  document.getElementById('conj-answer-row').style.display = 'flex';
+  document.getElementById('conj-input').focus();
+}
+
+function onConjInput() {
+  const val = document.getElementById('conj-input').value.trim();
+  document.getElementById('conj-check-btn').classList.toggle('ready', val.length > 0);
+}
+function onConjKey(e) { if (e.key === 'Enter') checkConjugation(); }
+
+function checkConjugation() {
+  const given = document.getElementById('conj-input').value.trim().toLowerCase();
+  if (!given || !conjCurrentExercise?.answer) return;
+  const correct = conjCurrentExercise.answer;
+  const isRight = normalize(given) === normalize(correct);
+  const hint    = isRight ? null : spellDiagnose(given, correct);
+
+  const resultEl = document.getElementById('conj-result');
+  resultEl.classList.add('show');
+  resultEl.style.borderColor = (isRight ? '#3a9e6a' : '#d94f4f') + '55';
+
+  document.getElementById('conj-result-msg').textContent = isRight ? '¡Perfecto! ✓' : 'Not quite ✗';
+  document.getElementById('conj-result-msg').style.color = isRight ? '#3a9e6a' : '#d94f4f';
+  document.getElementById('conj-result-correct').textContent = correct;
+  document.getElementById('conj-result-speak').onclick = () => speak(correct, 'es');
+
+  const youEl = document.getElementById('conj-result-you');
+  youEl.textContent = isRight ? '' : 'You wrote: "' + given + '"';
+
+  const hintEl = document.getElementById('conj-result-hint');
+  if (hint) {
+    hintEl.textContent = hint;
+    hintEl.style.color = hint.startsWith('⚠') ? '#c87d1a' : '#d94f4f';
+    hintEl.style.display = 'block';
+  } else {
+    hintEl.style.display = 'none';
+  }
+
+  // Show context sentence
+  const ex = conjCurrentExercise;
+  if (ex.sentence) {
+    document.getElementById('conj-sentence').textContent = ex.sentence;
+    document.getElementById('conj-sentence-en').textContent = ex.sentenceEnglish || '';
+    document.getElementById('conj-context').style.display = 'block';
+  }
+
+  document.getElementById('conj-next-btn').style.display = 'block';
+}
+
+// Init
+load();
+setDirection(direction);
+pickNext();
+loadApiKey();
+loadVoices();
+</script>
+
+
+</body></html>
