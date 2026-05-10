@@ -1722,78 +1722,118 @@ async function syncFromDoc() {
   document.getElementById('sync-review-wrap').style.display = 'none';
 
   try {
-    // Collect existing Spanish terms to avoid duplicates
-    const existingSpanish = cards.map(c =>
-      c.spanish.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
-    );
+    // Collect existing Spanish terms (normalized) to avoid duplicates
+    const normalizeTerm = s => s.toLowerCase()
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/^(el|la|los|las|un|una)\s+/, '')
+      .trim();
+    const existingSet = new Set(cards.map(c => normalizeTerm(c.spanish)));
 
-    const prompt = `You are a Spanish vocabulary card generator.
+    // Split doc into chunks of ~6000 chars on line breaks so nothing is dropped
+    const chunkDoc = (text, maxLen) => {
+      const lines = text.split('\n');
+      const chunks = [];
+      let buf = '';
+      for (const line of lines) {
+        if ((buf + '\n' + line).length > maxLen && buf) {
+          chunks.push(buf);
+          buf = line;
+        } else {
+          buf = buf ? buf + '\n' + line : line;
+        }
+      }
+      if (buf) chunks.push(buf);
+      return chunks;
+    };
+    const chunks = chunkDoc(docText, 6000);
 
-Here is the content of a Spanish vocabulary document:
+    const buildPrompt = (chunkText) => `You are a Spanish vocabulary card generator.
+
+Here is part of a Spanish vocabulary document:
 
 ---
-${docText.slice(0, 16000)}
+${chunkText}
 ---
 
-These Spanish terms already exist as flashcards — do NOT include them:
-${existingSpanish.join(', ')}
+Extract EVERY Spanish vocabulary word, verb, phrase, or expression in this chunk. Include single-word entries even when the document has no English translation next to them — you must add the translation.
 
-Extract ALL Spanish vocabulary words, verbs, phrases, and expressions from the document that are NOT already in the existing list above.
+Skip ONLY:
+- Section headers / category labels (e.g. "Pronouns", "Verbos (AR)", "Grupo e→ie", "Otras palabras", "Frases", "Non-Verbs", "The Yo-Go Group")
+- Pure English explanatory text
 
-Use the document's section headers as context (e.g. "Grupo e→ie" tells you those verbs are stem-changers).
+Use the document's section headers as context (e.g. "Grupo e→ie" tells you those verbs are stem-changers — apply that pattern to every verb in that section).
 
-For each new item produce a flashcard following these exact rules:
+For each item produce a flashcard following these exact rules:
 
-SPANISH SIDE rules:
-- Nouns: always include the definite article (el/la/los/las). Feminine/masculine pairs where applicable: "el embajador / la embajadora". If the document doesn't indicate gender, infer it correctly.
-- Verbs: infinitive form only. For stem-changing verbs add the pattern in parentheses: "pensar (e→ie)", "dormir (o→ue)", "servir (e→i)", "jugar (u→ue)", "disminuir (i→y)". Infer stem-change from section headers if not explicitly stated. For reflexive verbs include -se suffix. Regular AR/ER/IR verbs: just the infinitive, no label.
-- Adjectives: masculine/feminine pair if it changes: "frío / fría", "sucio / sucia". If invariable, just the word.
-- Phrases: exactly as they appear in the document.
+SPANISH SIDE:
+- Nouns: include the definite article (el/la/los/las). Use feminine/masculine pairs where they exist: "el embajador / la embajadora". Infer gender if not stated.
+- Verbs: infinitive only. For stem-changing verbs add pattern in parentheses: "pensar (e→ie)", "dormir (o→ue)", "servir (e→i)", "jugar (u→ue)", "disminuir (i→y)". Infer stem-change from section headers. Reflexive verbs include -se. Regular AR/ER/IR verbs: just the infinitive.
+- Adjectives: masculine/feminine pair if it changes: "frío / fría". Invariable: just the word.
+- Phrases: exactly as they appear.
 
-ENGLISH SIDE rules:
-- Only the clean translation. NO grammar labels, NO "(stem-change...)", NO "(AR verb)", NO "(changes with gender)".
-- Add translations for any word that doesn't have one in the document — infer from context or standard Spanish.
-- For ser: "to be (permanent: identity, origin, profession — DOctor)"
-- For estar: "to be (temporary: position, location, emotion — PLACE)"
+ENGLISH SIDE:
+- Clean translation only. NO grammar labels, NO "(stem-change...)", NO "(AR verb)".
+- ALWAYS provide a translation, even if the document doesn't include one. Infer from standard Spanish.
+- ser: "to be (permanent: identity, origin, profession — DOctor)"
+- estar: "to be (temporary: position, location, emotion — PLACE)"
 - Otherwise just the plain meaning.
 
-Respond with ONLY a JSON array, no markdown, no explanation:
+Respond with ONLY a JSON array, no markdown, no commentary:
 [{"spanish": "...", "english": "..."}, ...]
 
-If there are no new words to add, return: []`;
+If the chunk has no extractable vocabulary, return: []`;
 
-    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+    const callApi = async (chunkText) => {
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8000,
+          messages: [{ role: 'user', content: buildPrompt(chunkText) }]
+        })
+      });
+      if (!apiRes.ok) {
+        const err = await apiRes.json().catch(() => ({}));
+        throw new Error(err?.error?.message || 'API error ' + apiRes.status);
+      }
+      const apiData = await apiRes.json();
+      const rawText = (apiData.content || []).find(b => b.type === 'text')?.text || '[]';
+      const clean = rawText.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+      try { return JSON.parse(clean); } catch { return []; }
+    };
 
-    if (!apiRes.ok) {
-      const err = await apiRes.json().catch(() => ({}));
-      throw new Error(err?.error?.message || 'API error ' + apiRes.status);
+    // Process chunks sequentially, show progress
+    const allVocab = [];
+    for (let i = 0; i < chunks.length; i++) {
+      btn.innerHTML = `<span class="spinning">⟳</span> Syncing… (${i + 1}/${chunks.length})`;
+      const result = await callApi(chunks[i]);
+      if (Array.isArray(result)) allVocab.push(...result);
     }
 
-    const apiData = await apiRes.json();
-    const rawText = (apiData.content || []).find(b => b.type === 'text')?.text || '[]';
-    const clean = rawText.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+    // Dedupe: against existing cards AND within the new batch itself
+    const seenInBatch = new Set();
+    const reviewCards = [];
+    for (const v of allVocab) {
+      if (!v || !v.spanish || !v.english) continue;
+      const sp = v.spanish.trim();
+      const en = v.english.trim();
+      const key = normalizeTerm(sp);
+      if (!key) continue;
+      if (existingSet.has(key)) continue;
+      if (seenInBatch.has(key)) continue;
+      seenInBatch.add(key);
+      reviewCards.push({ spanish: sp, english: en });
+    }
 
-    let newVocab = [];
-    try { newVocab = JSON.parse(clean); } catch { newVocab = []; }
-
-    if (!Array.isArray(newVocab) || newVocab.length === 0) {
+    if (reviewCards.length === 0) {
       setSyncStatus('Already up to date — no new words found.', '#3a9e6a');
     } else {
-      const reviewCards = newVocab.filter(v => v.spanish && v.english)
-        .map(v => ({ spanish: v.spanish.trim(), english: v.english.trim() }));
       showPendingReview(reviewCards);
     }
 
