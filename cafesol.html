@@ -33,8 +33,8 @@
   }
   button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
   h1, h2, h3 { font-weight: 600; }
+  input, textarea { font: inherit; color: inherit; }
 
-  /* Header */
   .app-header {
     padding: 12px 16px;
     display: flex;
@@ -50,10 +50,8 @@
   .stats { display: flex; gap: 8px; font-size: 12px; }
   .stat { background: var(--panel); padding: 4px 10px; border-radius: 12px; font-weight: 600; }
 
-  /* Main */
   main { flex: 1; padding: 16px; overflow-y: auto; padding-bottom: 80px; }
 
-  /* Bottom nav */
   .bottom-nav {
     display: flex;
     justify-content: space-around;
@@ -81,7 +79,6 @@
   .nav-item.active { color: var(--gold); font-weight: 700; }
   .nav-icon { font-size: 22px; line-height: 1; }
 
-  /* Cards */
   .card {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -96,7 +93,6 @@
     margin-bottom: 12px;
   }
 
-  /* Buttons */
   .btn {
     display: inline-block;
     padding: 12px 20px;
@@ -110,10 +106,8 @@
   }
   .btn:disabled { opacity: 0.4; }
   .btn-secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
-  .btn-danger { background: var(--danger); }
   .btn-small { padding: 8px 12px; font-size: 13px; width: auto; }
 
-  /* Customer view */
   .customer-scene {
     background: linear-gradient(180deg, var(--panel) 0%, #e8d9b8 100%);
     border-radius: 16px;
@@ -167,19 +161,32 @@
     padding: 12px;
     font-size: 15px;
     line-height: 1.6;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     position: relative;
   }
+  .speech.user {
+    background: rgba(181, 129, 58, 0.15);
+    margin-left: 20px;
+    border-left: 3px solid var(--gold);
+  }
+  .speech-en {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding: 0 4px;
+    display: none;
+  }
+  .speech-en.show { display: block; }
   .speech-controls {
-    display: flex; gap: 8px; margin-top: 8px;
+    display: flex; gap: 8px; margin-top: 6px; margin-bottom: 10px;
   }
   .icon-btn {
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     background: var(--bg);
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
   }
   .icon-btn.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
   .icon-btn.recording { background: var(--danger); color: var(--bg); border-color: var(--danger); animation: pulse 1s infinite; }
@@ -201,19 +208,52 @@
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 12px;
+    padding: 12px 14px;
     text-align: left;
     margin-bottom: 8px;
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 15px;
+    line-height: 1.5;
   }
   .option-btn:active { background: var(--panel); }
   .option-btn.correct { background: rgba(74, 124, 58, 0.15); border-color: var(--success); }
   .option-btn.wrong { background: rgba(179, 77, 58, 0.12); border-color: var(--danger); }
+  .option-btn.acceptable { background: rgba(181, 129, 58, 0.12); border-color: var(--gold); }
   .option-btn.disabled { pointer-events: none; opacity: 0.6; }
-  .option-en { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-  /* Word popup */
+  .free-input-wrap {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .free-input-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .free-input-row {
+    display: flex; gap: 8px;
+  }
+  .free-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    outline: none;
+  }
+  .free-input:focus { border-color: var(--gold); }
+  .send-btn {
+    background: var(--gold);
+    color: var(--bg);
+    border-radius: 10px;
+    padding: 0 16px;
+    font-weight: 600;
+  }
+
   .word-popup {
     position: fixed;
     background: var(--text);
@@ -235,7 +275,6 @@
     border-top-color: var(--text);
   }
 
-  /* Regulars */
   .regular-card {
     background: var(--panel);
     border-radius: 14px;
@@ -265,18 +304,7 @@
     margin-top: 8px;
   }
   .story-beat em { color: var(--muted); font-size: 11px; display: block; margin-bottom: 4px; }
-  .streak-badge {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--bg);
-    padding: 3px 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-top: 6px;
-  }
 
-  /* Upgrades */
   .upgrade-item {
     background: var(--panel);
     border-radius: 12px;
@@ -304,7 +332,6 @@
     font-style: italic;
   }
 
-  /* Diary */
   .diary-entry {
     background: var(--panel);
     border-radius: 10px;
@@ -314,7 +341,6 @@
   }
   .diary-date { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
 
-  /* Setup / API */
   .setup-notice {
     background: rgba(179, 77, 58, 0.1);
     border: 1px solid var(--danger);
@@ -323,9 +349,7 @@
     margin-bottom: 16px;
     font-size: 13px;
   }
-  .setup-notice a { color: var(--gold); font-weight: 600; }
 
-  /* Loading */
   .loading {
     text-align: center;
     padding: 40px 20px;
@@ -341,7 +365,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 90px;
@@ -362,7 +385,6 @@
   }
   .toast.show { opacity: 1; }
 
-  /* Day summary */
   .summary-stat {
     display: flex; justify-content: space-between;
     padding: 8px 0;
@@ -371,7 +393,6 @@
   }
   .summary-stat:last-child { border-bottom: none; }
 
-  /* Hint modal */
   .hint-box {
     background: rgba(181, 129, 58, 0.1);
     border: 1px solid var(--gold);
@@ -382,7 +403,6 @@
     line-height: 1.5;
   }
 
-  /* Empty state */
   .empty {
     text-align: center;
     padding: 40px 20px;
@@ -391,10 +411,8 @@
   }
   .empty h3 { color: var(--text); font-size: 16px; margin-bottom: 8px; }
 
-  /* Rating stars */
   .rating-stars { color: var(--gold); letter-spacing: 2px; }
 
-  /* Utility */
   .row { display: flex; align-items: center; gap: 8px; }
   .space { flex: 1; }
   .center { text-align: center; }
@@ -402,7 +420,6 @@
   .small { font-size: 12px; }
   .mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mb-8 { margin-bottom: 8px; }
 
-  /* Home screen big button */
   .open-cafe {
     background: var(--gold);
     color: var(--bg);
@@ -415,6 +432,11 @@
     box-shadow: 0 4px 12px rgba(181, 129, 58, 0.3);
   }
   .open-cafe .sub { font-size: 12px; font-weight: 400; opacity: 0.85; margin-top: 4px; }
+
+  .actions-row {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .actions-row .btn { flex: 1; }
 </style>
 </head>
 <body>
@@ -535,50 +557,52 @@ const DOMAINS = {
 
 const STARTER_REGULARS = [
   {
-    id: 'elena',
-    name: 'Doña Elena',
-    emoji: '👵',
+    id: 'elena', name: 'Doña Elena', emoji: '👵',
     voice: { lang: 'es-ES', pitch: 1.1, rate: 0.85 },
     archetype: 'elderly widow, warm but a little lonely',
     backstory: 'Widowed 3 years. Three grandchildren she rarely sees. Comes for chocolate caliente most mornings. Was a schoolteacher for 40 years, corrects your Spanish gently.',
     unlocked_at_day: 1
   },
   {
-    id: 'miguel',
-    name: 'Miguel',
-    emoji: '🧑‍💼',
+    id: 'miguel', name: 'Miguel', emoji: '🧑‍💼',
     voice: { lang: 'es-ES', pitch: 0.9, rate: 1.0 },
     archetype: 'young professional, ambitious but stressed',
     backstory: 'Software engineer, job-hunting after a layoff. Orders café con leche and a tostada, sin azúcar. Sometimes forgets his wallet. Interviewing at different companies.',
     unlocked_at_day: 1
   },
   {
-    id: 'sofia',
-    name: 'Sofía',
-    emoji: '👩‍🎨',
+    id: 'sofia', name: 'Sofía', emoji: '👩‍🎨',
     voice: { lang: 'es-MX', pitch: 1.15, rate: 1.05 },
     archetype: 'art student, curious and chatty',
     backstory: 'Just moved from Mexico City to study fine art. Homesick sometimes. Draws people at the café. Orders whatever is new. Loves recommendations.',
     unlocked_at_day: 3
   },
   {
-    id: 'carlos',
-    name: 'Don Carlos',
-    emoji: '🧓',
+    id: 'carlos', name: 'Don Carlos', emoji: '🧓',
     voice: { lang: 'es-ES', pitch: 0.85, rate: 0.9 },
     archetype: 'retired taxi driver, opinionated',
     backstory: 'Drove a Madrid taxi for 45 years. Has strong opinions on football, politics, and the price of everything. Reads three newspapers with his café solo.',
     unlocked_at_day: 5
   },
   {
-    id: 'lucia',
-    name: 'Lucía',
-    emoji: '👩‍⚕️',
+    id: 'lucia', name: 'Lucía', emoji: '👩‍⚕️',
     voice: { lang: 'es-ES', pitch: 1.05, rate: 1.1 },
     archetype: 'nurse, tired but friendly',
     backstory: 'Emergency room nurse, works long shifts. Comes in for strong coffee at odd hours. Has a golden retriever named Pipa. Dating someone new.',
     unlocked_at_day: 7
   }
+];
+
+// Walk-in name pools (avoid repeats)
+const WALKIN_NAMES = [
+  'María', 'Carmen', 'Ana', 'Isabel', 'Rosa', 'Laura', 'Marta', 'Cristina', 'Pilar',
+  'Beatriz', 'Julia', 'Sara', 'Nuria', 'Valentina', 'Camila', 'Andrea', 'Paula',
+  'Antonio', 'José', 'Juan', 'Manuel', 'Francisco', 'David', 'Javier', 'Daniel',
+  'Alejandro', 'Pablo', 'Sergio', 'Adrián', 'Rafael', 'Diego', 'Fernando',
+  'Andrés', 'Rodrigo', 'Emilio', 'Iván', 'Óscar', 'Rubén', 'Álvaro', 'Gonzalo',
+  'Ricardo', 'Héctor', 'Ignacio', 'Tomás', 'Mateo', 'Nicolás', 'Sebastián',
+  'Renata', 'Ximena', 'Alba', 'Inés', 'Clara', 'Elisa', 'Vera', 'Silvia',
+  'Mariana', 'Lorena', 'Adriana', 'Natalia', 'Verónica', 'Rocío', 'Amalia'
 ];
 
 // ============ STATE ============
@@ -588,7 +612,6 @@ function defaultState() {
     rating: 5.0,
     day: 1,
     ordersToday: 0,
-    ratingHistory: [5, 5, 5, 5, 5],
     unlockedDomains: ['cafe'],
     unlockedRegulars: ['elena', 'miguel'],
     regulars: {
@@ -597,7 +620,7 @@ function defaultState() {
     },
     wordCoverage: {},
     diary: [],
-    lastPlayed: null
+    recentWalkinNames: []
   };
 }
 
@@ -651,17 +674,14 @@ function getPriorityWords() {
   const deck = getVocabDeck();
   if (!deck.length) return [];
   const cov = state.wordCoverage;
-  // Sort deck words by: unseen > least recently seen > lowest accuracy
   const scored = deck.map(card => {
     const spanish = card.spanish || card.front || card.term || '';
     const key = normalizeWord(spanish);
     const info = cov[key] || { seen: 0, lastSeen: -999 };
-    // Score: lower is higher priority
     const score = info.seen * 100 + info.lastSeen;
     return { spanish, english: card.english || card.back || card.definition || '', score, key };
   });
   scored.sort((a, b) => a.score - b.score);
-  // Return top 15 priority words
   return scored.slice(0, 15);
 }
 
@@ -672,6 +692,15 @@ function getDifficulty() {
   if (deckSize < 300) return 'B1 intermediate';
   if (deckSize < 500) return 'B2 upper-intermediate';
   return 'C1 advanced';
+}
+
+function pickWalkinName() {
+  const recent = state.recentWalkinNames || [];
+  const available = WALKIN_NAMES.filter(n => !recent.includes(n));
+  const pool = available.length ? available : WALKIN_NAMES;
+  const name = pool[Math.floor(Math.random() * pool.length)];
+  state.recentWalkinNames = [name, ...recent].slice(0, 20);
+  return name;
 }
 
 // ============ API ============
@@ -694,7 +723,7 @@ async function callApi(prompt, useJson = true) {
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error('API_ERROR: ' + res.status + ' ' + text.slice(0, 200));
+    throw new Error('API error ' + res.status + ': ' + text.slice(0, 200));
   }
   const data = await res.json();
   let text = data.content[0].text.trim();
@@ -728,7 +757,8 @@ Story stage: ${state_r.storyStage} (progress their storyline slightly)
 Previous story beats: ${state_r.storyBeats.slice(-3).join(' | ') || 'none yet'}`;
   } else {
     customerBlock = `ONE-TIME CUSTOMER for ${domain.name}:
-Generate a plausible walk-in customer (name, one-line vibe) fitting this domain.`;
+USE THIS EXACT NAME: ${customer.name}
+Generate a plausible walk-in personality fitting this name and domain (one-line vibe).`;
   }
 
   const prompt = `You are generating a short Spanish roleplay for a language learner running a café called Café Sol.
@@ -744,11 +774,11 @@ LEARNER'S FULL DECK (stay mostly within these + very common words): ${deckList}
 
 ${customerBlock}
 
-Generate a 1-turn interaction: customer says something, learner picks a response, customer reacts, done.
+Generate an interaction where the customer starts a conversation. The learner will pick a response (or type their own).
 
 Return ONLY valid JSON (no markdown, no prose):
 {
-  "customer_name": "display name",
+  "customer_name": "display name (use exact walk-in name if provided)",
   "customer_emoji": "single emoji fitting them",
   "opening": "Spanish greeting + order/statement, 1-2 sentences using their level",
   "opening_en": "English translation",
@@ -756,10 +786,10 @@ Return ONLY valid JSON (no markdown, no prose):
   "vocab_used": ["array", "of", "spanish", "words", "in", "opening"],
   "options": [
     {
-      "spanish": "response option 1",
+      "spanish": "response option 1 (natural, conversational)",
       "english": "translation",
       "quality": "correct",
-      "reaction": "customer's Spanish reaction if picked",
+      "reaction": "customer's Spanish reaction if picked (2-3 sentences, may ask a follow-up question)",
       "reaction_en": "English translation of reaction",
       "coins": 15,
       "loyalty": 4
@@ -777,31 +807,77 @@ Return ONLY valid JSON (no markdown, no prose):
       "spanish": "response option 3",
       "english": "translation",
       "quality": "wrong",
-      "reaction": "Spanish reaction (customer confused or annoyed)",
+      "reaction": "Spanish reaction (customer confused or gently annoyed)",
       "reaction_en": "English",
       "coins": 2,
       "loyalty": -3
     }
   ],
-  "story_beat": "one sentence English summary of this interaction (for the diary/regular's story). For regulars, advance their arc.",
-  "closing": "customer's farewell in Spanish",
-  "closing_en": "English"
+  "story_beat": "one sentence English summary of what happened in this interaction (for the diary/regular's story)."
 }
 
 RULES:
 - Use vocab at the learner's level. Do NOT introduce many new hard words.
 - For regulars, reference their backstory and progress the storyline.
 - Options must be genuinely different in meaning, not just phrasing variants.
-- "correct" = fulfills what customer wants. "acceptable" = polite but suboptimal. "wrong" = wrong item/misunderstanding.
+- Reactions can be conversational and end with a question the learner might respond to.
 - Keep customer Spanish 1-3 short sentences.
 - Never break the fourth wall.`;
 
   return await callApi(prompt, true);
 }
 
+// Continue conversation: user types free response, get customer reply
+async function generateContinuation(customer, context, history, userMessage) {
+  const domain = DOMAINS[context.domain];
+  const difficulty = getDifficulty();
+
+  let customerBlock;
+  if (customer.type === 'regular') {
+    const r = STARTER_REGULARS.find(x => x.id === customer.id);
+    customerBlock = `Customer: ${r.name} — ${r.archetype}. Backstory: ${r.backstory}`;
+  } else {
+    customerBlock = `Customer: ${customer.name} — walk-in at ${domain.name}`;
+  }
+
+  const historyText = history.map(h => `${h.role === 'customer' ? 'CUSTOMER' : 'LEARNER'}: ${h.spanish}`).join('\n');
+
+  const prompt = `Continue this Spanish café conversation. The learner is running Café Sol.
+
+LEARNER LEVEL: ${difficulty}
+DOMAIN: ${domain.name}
+${customerBlock}
+
+CONVERSATION SO FAR:
+${historyText}
+LEARNER: ${userMessage}
+
+Generate the customer's next reply. Evaluate the learner's Spanish quality too.
+
+Return ONLY valid JSON:
+{
+  "user_quality": "correct" | "acceptable" | "wrong",
+  "user_feedback_en": "brief English note about the learner's Spanish (grammar, clarity). If it was wrong/confused, gently note why.",
+  "customer_reply": "Spanish reply, 1-3 sentences at learner's level. May end with a question or move the conversation. If it feels natural to wrap up, say goodbye.",
+  "customer_reply_en": "English translation",
+  "vocab_used": ["spanish", "words", "in", "reply"],
+  "should_end": true | false,
+  "coins_change": -3 to +8,
+  "loyalty_change": -3 to +3
+}
+
+RULES:
+- Stay in character. Keep replies short and natural.
+- If the learner asked a question, answer it.
+- If the conversation has gone 4+ turns, wrap it up naturally.
+- If the learner writes nonsense or off-topic, react appropriately in character.`;
+
+  return await callApi(prompt, true);
+}
+
 // ============ TABS / ROUTING ============
 let currentTab = 'cafe';
-let currentInteraction = null; // { customer, scenario, turnState }
+let currentInteraction = null;
 let dailyQueue = [];
 let queueIndex = 0;
 
@@ -821,6 +897,7 @@ function render() {
   const main = document.getElementById('main');
   if (!getApiKey()) {
     main.innerHTML = renderSetup();
+    attachHandlers();
     return;
   }
   if (currentTab === 'cafe') main.innerHTML = renderCafe();
@@ -845,11 +922,10 @@ function renderSetup() {
   return `
     <div class="setup-notice">
       <b>API key needed.</b> Café Sol uses your Anthropic API key (same one flashcards.html uses).
-      Set it in flashcards.html first, or paste it below.
     </div>
     <input type="password" id="setup-key" placeholder="sk-ant-..." style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:14px;">
     <button class="btn" id="setup-save">Save key</button>
-    <p class="muted mt-16">Deck: ${deck.length} words loaded from flashcards.</p>
+    <p class="muted mt-16">Deck: ${deck.length} words loaded.</p>
   `;
 }
 
@@ -865,19 +941,9 @@ function renderCafe() {
     `;
   }
 
-  if (currentInteraction) {
-    return `<div id="interaction-slot"></div>`;
-  }
-
-  if (dailyQueue.length && queueIndex < dailyQueue.length) {
-    // Mid-day: show queue and next customer button
-    return renderMidDay();
-  }
-
-  if (dailyQueue.length && queueIndex >= dailyQueue.length) {
-    return renderDaySummary();
-  }
-
+  if (currentInteraction) return `<div id="interaction-slot"></div>`;
+  if (dailyQueue.length && queueIndex < dailyQueue.length) return renderMidDay();
+  if (dailyQueue.length && queueIndex >= dailyQueue.length) return renderDaySummary();
   return renderDayStart();
 }
 
@@ -893,7 +959,7 @@ function renderDayStart() {
       Open the café ☀
       <div class="sub">Serve today's customers</div>
     </button>
-    <p class="muted mt-16 center small">Each day = 4-6 customers. Takes ~5 min.</p>
+    <p class="muted mt-16 center small">10-14 customers per day.</p>
   `;
 }
 
@@ -910,6 +976,7 @@ function renderMidDay() {
       <div class="customer-queue">${dots}</div>
     </div>
     <button class="btn" id="next-customer">Serve next customer →</button>
+    <button class="btn btn-secondary mt-8" id="close-early">Close early</button>
   `;
 }
 
@@ -957,11 +1024,10 @@ function getDayPart() {
   return parts[state.day % parts.length];
 }
 
-// ============ CUSTOMER QUEUE GENERATION ============
+// ============ QUEUE ============
 function generateQueue() {
   const queue = [];
   const dayNum = state.day;
-  // Unlock new regulars
   for (const r of STARTER_REGULARS) {
     if (dayNum >= r.unlocked_at_day && !state.unlockedRegulars.includes(r.id)) {
       state.unlockedRegulars.push(r.id);
@@ -971,12 +1037,10 @@ function generateQueue() {
       state.diary.unshift({ day: dayNum, text: `${r.name} started coming to the café.` });
     }
   }
-  // Regulars: each has a chance to visit based on loyalty and streak
   const visitingRegulars = [];
   for (const rid of state.unlockedRegulars) {
     const r = state.regulars[rid];
     const daysSinceVisit = dayNum - r.lastVisitDay;
-    // Chance based on loyalty (higher = more likely) and days since visit
     const baseChance = Math.min(0.85, 0.3 + r.loyalty / 200);
     const gapMultiplier = Math.min(2, 1 + daysSinceVisit / 3);
     const chance = Math.min(0.95, baseChance * gapMultiplier);
@@ -984,17 +1048,19 @@ function generateQueue() {
       visitingRegulars.push({ type: 'regular', id: rid, emoji: STARTER_REGULARS.find(x => x.id === rid).emoji });
     }
   }
-  // Fill queue: 4-6 customers total, mix of regulars and walk-ins
-  const target = 4 + Math.floor(Math.random() * 3);
-  queue.push(...visitingRegulars.slice(0, target - 1));
+  const target = 10 + Math.floor(Math.random() * 5); // 10-14
+  queue.push(...visitingRegulars);
   const walkInsNeeded = Math.max(1, target - queue.length);
   for (let i = 0; i < walkInsNeeded; i++) {
-    // Pick a random unlocked domain, weighted toward newer unlocks
     const doms = state.unlockedDomains;
     const domain = doms[Math.floor(Math.random() * doms.length)];
-    queue.push({ type: 'walkin', domain, emoji: getDomainEmoji(domain) });
+    queue.push({
+      type: 'walkin',
+      domain,
+      emoji: getDomainEmoji(domain),
+      name: pickWalkinName()
+    });
   }
-  // Shuffle
   queue.sort(() => Math.random() - 0.5);
   return queue;
 }
@@ -1008,24 +1074,29 @@ function getDomainEmoji(d) {
   return map[d] || '👤';
 }
 
-// ============ INTERACTION FLOW ============
+// ============ INTERACTION ============
 async function startDay() {
   dailyQueue = generateQueue();
   queueIndex = 0;
   state._todaySummary = { coins: 0, ratingChange: 0, correctCount: 0, totalCount: 0, storyBeats: [] };
   state.ordersToday = 0;
+  saveState();
   render();
 }
 
 async function serveNextCustomer() {
-  if (queueIndex >= dailyQueue.length) {
-    render();
-    return;
-  }
+  if (queueIndex >= dailyQueue.length) { render(); return; }
   const customer = dailyQueue[queueIndex];
   const domain = customer.type === 'walkin' ? customer.domain
     : (Math.random() < 0.7 ? 'cafe' : state.unlockedDomains[Math.floor(Math.random() * state.unlockedDomains.length)]);
-  currentInteraction = { customer, domain, phase: 'loading' };
+  currentInteraction = {
+    customer, domain,
+    phase: 'loading',
+    hintUsed: false,
+    turnCount: 0,
+    history: [],
+    scenarioClosed: false
+  };
   render();
   try {
     const scenario = await generateScenario(customer, {
@@ -1034,7 +1105,6 @@ async function serveNextCustomer() {
     });
     currentInteraction.scenario = scenario;
     currentInteraction.phase = 'ordering';
-    currentInteraction.hintUsed = false;
     renderInteraction();
   } catch (e) {
     toast('Error: ' + e.message);
@@ -1045,17 +1115,41 @@ async function serveNextCustomer() {
 
 function renderInteraction() {
   const slot = document.getElementById('interaction-slot') || document.getElementById('main');
-  const { customer, scenario, phase } = currentInteraction;
+  const ci = currentInteraction;
+  if (!ci) return;
 
-  if (phase === 'loading') {
-    slot.innerHTML = `<div class="loading"><div class="spinner"></div><p class="mt-8">The next customer is coming in...</p></div>`;
+  if (ci.phase === 'loading') {
+    slot.innerHTML = `<div class="loading"><div class="spinner"></div><p class="mt-8">The next customer is coming in…</p></div>`;
     return;
   }
 
-  const emoji = scenario.customer_emoji || customer.emoji || '👤';
-  const name = scenario.customer_name || 'Customer';
-  const isRegular = customer.type === 'regular';
-  const regularState = isRegular ? state.regulars[customer.id] : null;
+  const emoji = ci.scenario.customer_emoji || ci.customer.emoji || '👤';
+  const name = ci.scenario.customer_name || ci.customer.name || 'Customer';
+  const isRegular = ci.customer.type === 'regular';
+  const regularState = isRegular ? state.regulars[ci.customer.id] : null;
+
+  // Build conversation history HTML
+  const messagesHtml = ci.history.map(msg => {
+    if (msg.role === 'customer') {
+      return `
+        <div class="speech">${wrapWords(msg.spanish)}</div>
+        <div class="speech-controls">
+          <button class="icon-btn speak-msg" data-text="${escapeAttr(msg.spanish)}" data-voice="customer" title="Play voice">🔊</button>
+          <button class="icon-btn toggle-en" data-id="msg-en-${msg.idx}">🇬🇧</button>
+          <div class="space"></div>
+        </div>
+        <div class="speech-en" id="msg-en-${msg.idx}">${msg.english}</div>
+      `;
+    } else {
+      return `
+        <div class="speech user">${wrapWords(msg.spanish)}</div>
+        <div class="speech-controls" style="justify-content:flex-end;">
+          <button class="icon-btn speak-msg" data-text="${escapeAttr(msg.spanish)}" data-voice="user" title="Play voice">🔊</button>
+        </div>
+        ${msg.feedback ? `<div class="speech-en show" style="text-align:right;font-style:italic;">${msg.feedback}</div>` : ''}
+      `;
+    }
+  }).join('');
 
   let content = `
     <div class="customer-scene">
@@ -1067,51 +1161,53 @@ function renderInteraction() {
             <div class="customer-name">${name}</div>
             <div class="customer-meta">
               ${isRegular ? `Regular · ${regularState.streak > 0 ? '🔥 ' + regularState.streak + ' day streak · ' : ''}Loyalty ${regularState.loyalty}%`
-                          : 'Walk-in · ' + DOMAINS[currentInteraction.domain].name}
+                          : 'Walk-in · ' + DOMAINS[ci.domain].name}
             </div>
           </div>
         </div>
-        <div class="speech" id="speech-opening">${wrapWords(scenario.opening)}</div>
-        <div class="speech-controls">
-          <button class="icon-btn" id="speak-opening" title="Play voice">🔊</button>
-          <button class="icon-btn" id="mic-btn" title="Speak your response">🎤</button>
-          <button class="icon-btn" id="hint-btn" title="Hint (small loyalty cost)">💡</button>
-          <div class="space"></div>
-        </div>
+        ${messagesHtml}
   `;
 
-  if (phase === 'ordering') {
+  if (ci.phase === 'ordering') {
+    // First turn: show initial customer message + 3 options + free text
     content += `
-      <div class="mt-16" id="options-list">
-        ${scenario.options.map((opt, i) => `
-          <button class="option-btn" data-option="${i}">
-            <div>${opt.spanish}</div>
-            <div class="option-en">${opt.english}</div>
-          </button>
+      <div class="speech">${wrapWords(ci.scenario.opening)}</div>
+      <div class="speech-controls">
+        <button class="icon-btn" id="speak-opening" title="Play voice">🔊</button>
+        <button class="icon-btn" id="toggle-opening-en" title="Show translation">🇬🇧</button>
+        <button class="icon-btn" id="hint-btn" title="Hint (small loyalty cost)">💡</button>
+        <div class="space"></div>
+      </div>
+      <div class="speech-en" id="opening-en">${ci.scenario.opening_en}</div>
+      <div class="mt-16">
+        ${ci.scenario.options.map((opt, i) => `
+          <button class="option-btn" data-option="${i}">${wrapWords(opt.spanish)}</button>
         `).join('')}
       </div>
-    `;
-  } else if (phase === 'reacted') {
-    const opt = scenario.options[currentInteraction.chosenOption];
-    content += `
-      <div class="mt-16">
-        <div class="option-btn ${opt.quality}" style="opacity:1;">
-          <div>${opt.spanish}</div>
-          <div class="option-en">${opt.english}</div>
+      <div class="free-input-wrap">
+        <div class="free-input-label">Or write your own answer</div>
+        <div class="free-input-row">
+          <input type="text" class="free-input" id="free-input" placeholder="Escribe en español…" autocomplete="off" autocorrect="off">
+          <button class="send-btn" id="send-free">Send</button>
         </div>
       </div>
-      <div class="speech mt-16" id="speech-reaction">${wrapWords(opt.reaction)}</div>
-      <div class="speech-controls">
-        <button class="icon-btn" id="speak-reaction">🔊</button>
-        <div class="space"></div>
-        <div class="small muted">${opt.reaction_en}</div>
+    `;
+  } else if (ci.phase === 'awaitingContinuation') {
+    // Free text input for continuing conversation
+    content += `
+      <div class="free-input-wrap" style="border-top:none;padding-top:8px;">
+        <div class="free-input-label">Say something back</div>
+        <div class="free-input-row">
+          <input type="text" class="free-input" id="continue-input" placeholder="Escribe en español…" autocomplete="off" autocorrect="off">
+          <button class="send-btn" id="send-continue">Send</button>
+        </div>
+        <button class="btn btn-secondary mt-8" id="end-interaction">End · Say goodbye</button>
       </div>
-      <div class="speech mt-16" id="speech-closing">${wrapWords(scenario.closing)}</div>
-      <div class="speech-controls">
-        <button class="icon-btn" id="speak-closing">🔊</button>
-        <div class="space"></div>
-        <div class="small muted">${scenario.closing_en}</div>
-      </div>
+    `;
+  } else if (ci.phase === 'sending') {
+    content += `<div class="loading"><div class="spinner"></div><p class="mt-8 small">…</p></div>`;
+  } else if (ci.phase === 'ended') {
+    content += `
       <button class="btn mt-16" id="continue-btn">
         ${queueIndex + 1 >= dailyQueue.length ? 'End day' : 'Next customer →'}
       </button>
@@ -1129,151 +1225,333 @@ function wrapWords(text) {
     if (/^\s+$/.test(chunk)) return chunk;
     const clean = chunk.replace(/[.,!?¿¡:;"'()]/g, '');
     if (!clean) return chunk;
-    return `<span class="word-tap" data-word="${clean}">${chunk}</span>`;
+    return `<span class="word-tap" data-word="${escapeAttr(clean)}">${chunk}</span>`;
   }).join('');
 }
 
+function escapeAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function attachInteractionHandlers() {
-  const { scenario } = currentInteraction;
+  const ci = currentInteraction;
+  if (!ci) return;
 
-  // Word tap for translation
+  // Word tap (stop propagation so button clicks don't fire)
   document.querySelectorAll('.word-tap').forEach(el => {
-    el.addEventListener('click', e => showWordPopup(e, el.dataset.word));
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      showWordPopup(e, el.dataset.word);
+    });
   });
 
-  // Speak buttons
+  // Speak opening
   const speakBtn = document.getElementById('speak-opening');
-  if (speakBtn) speakBtn.addEventListener('click', () => speak(scenario.opening, getVoice()));
-  const speakReact = document.getElementById('speak-reaction');
-  if (speakReact) speakReact.addEventListener('click', () => {
-    const opt = scenario.options[currentInteraction.chosenOption];
-    speak(opt.reaction, getVoice());
+  if (speakBtn) speakBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    speak(ci.scenario.opening, getVoice());
   });
-  const speakClose = document.getElementById('speak-closing');
-  if (speakClose) speakClose.addEventListener('click', () => speak(scenario.closing, getVoice()));
 
-  // Mic
-  const micBtn = document.getElementById('mic-btn');
-  if (micBtn) micBtn.addEventListener('click', () => startMic(micBtn));
+  // Toggle opening English
+  const toggleOpen = document.getElementById('toggle-opening-en');
+  if (toggleOpen) toggleOpen.addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('opening-en').classList.toggle('show');
+  });
+
+  // Speak history messages
+  document.querySelectorAll('.speak-msg').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const voice = el.dataset.voice === 'user'
+        ? { lang: 'es-ES', pitch: 1, rate: 1 }
+        : getVoice();
+      speak(el.dataset.text, voice);
+    });
+  });
+
+  // Toggle EN on history messages
+  document.querySelectorAll('.toggle-en').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const target = document.getElementById(el.dataset.id);
+      if (target) target.classList.toggle('show');
+    });
+  });
 
   // Hint
   const hintBtn = document.getElementById('hint-btn');
-  if (hintBtn) hintBtn.addEventListener('click', () => showHint());
+  if (hintBtn) hintBtn.addEventListener('click', showHint);
 
   // Options
-  document.querySelectorAll('#options-list .option-btn').forEach(btn => {
-    btn.addEventListener('click', () => chooseOption(parseInt(btn.dataset.option)));
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      // Don't fire if a word inside was tapped (already handled by stopPropagation)
+      chooseOption(parseInt(btn.dataset.option));
+    });
   });
 
-  // Continue
+  // Free input on first turn
+  const sendFree = document.getElementById('send-free');
+  const freeInput = document.getElementById('free-input');
+  if (sendFree) {
+    sendFree.addEventListener('click', () => submitFreeAnswer(freeInput.value.trim()));
+    freeInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitFreeAnswer(freeInput.value.trim());
+    });
+  }
+
+  // Continue conversation input
+  const sendCont = document.getElementById('send-continue');
+  const contInput = document.getElementById('continue-input');
+  if (sendCont) {
+    sendCont.addEventListener('click', () => submitContinuation(contInput.value.trim()));
+    contInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitContinuation(contInput.value.trim());
+    });
+  }
+
+  // End
+  const endBtn = document.getElementById('end-interaction');
+  if (endBtn) endBtn.addEventListener('click', () => endInteraction());
+
+  // Continue to next customer
   const contBtn = document.getElementById('continue-btn');
   if (contBtn) contBtn.addEventListener('click', continueToNext);
 }
 
 function getVoice() {
-  const { customer, scenario } = currentInteraction;
-  if (customer.type === 'regular') {
-    const r = STARTER_REGULARS.find(x => x.id === customer.id);
+  const ci = currentInteraction;
+  if (!ci) return { lang: 'es-ES', pitch: 1, rate: 1 };
+  if (ci.customer.type === 'regular') {
+    const r = STARTER_REGULARS.find(x => x.id === ci.customer.id);
     return r.voice;
   }
-  // Random voice params per walk-in
-  const langs = ['es-ES', 'es-MX', 'es-CO'];
-  return {
-    lang: langs[Math.floor(Math.random() * langs.length)],
-    pitch: 0.9 + Math.random() * 0.3,
-    rate: 0.9 + Math.random() * 0.2
-  };
+  // Consistent per-walkin voice
+  if (!ci.customer._voice) {
+    const langs = ['es-ES', 'es-MX', 'es-CO'];
+    ci.customer._voice = {
+      lang: langs[Math.floor(Math.random() * langs.length)],
+      pitch: 0.9 + Math.random() * 0.3,
+      rate: 0.9 + Math.random() * 0.2
+    };
+  }
+  return ci.customer._voice;
 }
 
 function chooseOption(idx) {
-  const { scenario } = currentInteraction;
-  const opt = scenario.options[idx];
-  currentInteraction.chosenOption = idx;
-  currentInteraction.phase = 'reacted';
+  const ci = currentInteraction;
+  const opt = ci.scenario.options[idx];
 
-  // Update state
+  // Add opening + user response + reaction to history
+  const startIdx = ci.history.length;
+  ci.history.push({
+    role: 'customer',
+    spanish: ci.scenario.opening,
+    english: ci.scenario.opening_en,
+    idx: startIdx
+  });
+  ci.history.push({
+    role: 'user',
+    spanish: opt.spanish,
+    english: opt.english,
+    idx: startIdx + 1,
+    feedback: opt.quality === 'correct' ? '✓ Good response' : opt.quality === 'acceptable' ? '~ OK response' : '✗ Not quite right'
+  });
+  ci.history.push({
+    role: 'customer',
+    spanish: opt.reaction,
+    english: opt.reaction_en,
+    idx: startIdx + 2
+  });
+
+  // Apply rewards
   let coinGain = opt.coins;
   let loyaltyChange = opt.loyalty;
-  if (currentInteraction.hintUsed) {
+  if (ci.hintUsed) {
     coinGain = Math.floor(coinGain * 0.6);
     loyaltyChange = Math.max(loyaltyChange - 2, -5);
   }
-  state.coins += coinGain;
-  const isCorrect = opt.quality === 'correct';
-  state._todaySummary.coins += coinGain;
-  state._todaySummary.totalCount++;
-  if (isCorrect) state._todaySummary.correctCount++;
-
-  // Rating impact
-  const ratingImpact = isCorrect ? 0.05 : (opt.quality === 'acceptable' ? -0.02 : -0.15);
-  state._todaySummary.ratingChange += ratingImpact;
-
-  // Regular loyalty
-  if (currentInteraction.customer.type === 'regular') {
-    const rid = currentInteraction.customer.id;
-    state.regulars[rid].loyalty = Math.max(0, Math.min(100, state.regulars[rid].loyalty + loyaltyChange));
-    state.regulars[rid].lastVisitDay = state.day;
-    state.regulars[rid].streak++;
-    state.regulars[rid].storyStage++;
-    if (scenario.story_beat) {
-      state.regulars[rid].storyBeats.push(`Day ${state.day}: ${scenario.story_beat}`);
-      state._todaySummary.storyBeats.push(`<em>Day ${state.day} · ${scenario.customer_name}:</em> ${scenario.story_beat}`);
-    }
-  } else if (scenario.story_beat) {
-    state._todaySummary.storyBeats.push(`<em>Day ${state.day} · ${scenario.customer_name}:</em> ${scenario.story_beat}`);
-  }
-
-  // Diary
-  state.diary.unshift({
-    day: state.day,
-    text: `${scenario.customer_name}: ${scenario.story_beat || 'ordered from ' + DOMAINS[currentInteraction.domain].name}`
-  });
-  if (state.diary.length > 100) state.diary = state.diary.slice(0, 100);
+  applyRewards(coinGain, loyaltyChange, opt.quality);
 
   // Vocab coverage
-  if (scenario.vocab_used) recordWordSeen(scenario.vocab_used);
+  if (ci.scenario.vocab_used) recordWordSeen(ci.scenario.vocab_used);
+
+  // Story beat
+  if (ci.scenario.story_beat) {
+    state._todaySummary.storyBeats.push(`<em>Day ${state.day} · ${ci.scenario.customer_name}:</em> ${ci.scenario.story_beat}`);
+    if (ci.customer.type === 'regular') {
+      state.regulars[ci.customer.id].storyBeats.push(`Day ${state.day}: ${ci.scenario.story_beat}`);
+    }
+    state.diary.unshift({ day: state.day, text: `${ci.scenario.customer_name}: ${ci.scenario.story_beat}` });
+  }
+
+  ci.turnCount++;
+  ci.phase = 'awaitingContinuation';
+  saveState();
+  toast(`+${coinGain} 💰 ${loyaltyChange >= 0 ? '+' : ''}${loyaltyChange} loyalty`);
+  renderInteraction();
+}
+
+async function submitFreeAnswer(text) {
+  if (!text) return;
+  const ci = currentInteraction;
+  ci.phase = 'sending';
+  renderInteraction();
+
+  // Add opening + user message to history
+  const startIdx = ci.history.length;
+  ci.history.push({
+    role: 'customer',
+    spanish: ci.scenario.opening,
+    english: ci.scenario.opening_en,
+    idx: startIdx
+  });
+  ci.history.push({
+    role: 'user',
+    spanish: text,
+    idx: startIdx + 1
+  });
+
+  try {
+    const result = await generateContinuation(
+      ci.customer,
+      { domain: ci.domain },
+      ci.history.slice(0, -1),
+      text
+    );
+    handleContinuationResult(result);
+  } catch (e) {
+    toast('Error: ' + e.message);
+    ci.phase = 'ordering';
+    ci.history = [];
+    renderInteraction();
+  }
+}
+
+async function submitContinuation(text) {
+  if (!text) return;
+  const ci = currentInteraction;
+  ci.phase = 'sending';
+
+  const startIdx = ci.history.length;
+  ci.history.push({
+    role: 'user',
+    spanish: text,
+    idx: startIdx
+  });
+  renderInteraction();
+
+  try {
+    const result = await generateContinuation(
+      ci.customer,
+      { domain: ci.domain },
+      ci.history.slice(0, -1),
+      text
+    );
+    handleContinuationResult(result);
+  } catch (e) {
+    toast('Error: ' + e.message);
+    ci.phase = 'awaitingContinuation';
+    renderInteraction();
+  }
+}
+
+function handleContinuationResult(result) {
+  const ci = currentInteraction;
+  // Attach feedback to last user message
+  const lastUserMsg = [...ci.history].reverse().find(m => m.role === 'user');
+  if (lastUserMsg && result.user_feedback_en) {
+    lastUserMsg.feedback = (result.user_quality === 'correct' ? '✓ ' : result.user_quality === 'acceptable' ? '~ ' : '✗ ') + result.user_feedback_en;
+  }
+  // Add customer reply
+  const idx = ci.history.length;
+  ci.history.push({
+    role: 'customer',
+    spanish: result.customer_reply,
+    english: result.customer_reply_en,
+    idx
+  });
+
+  // Rewards
+  applyRewards(result.coins_change || 0, result.loyalty_change || 0, result.user_quality);
+  if (result.vocab_used) recordWordSeen(result.vocab_used);
+
+  ci.turnCount++;
+  const shouldEnd = result.should_end || ci.turnCount >= 5;
+  ci.phase = shouldEnd ? 'ended' : 'awaitingContinuation';
+
+  // Update day summary
+  state._todaySummary.totalCount++;
+  if (result.user_quality === 'correct') state._todaySummary.correctCount++;
 
   saveState();
+  if (result.coins_change || result.loyalty_change) {
+    toast(`${result.coins_change >= 0 ? '+' : ''}${result.coins_change} 💰 ${result.loyalty_change >= 0 ? '+' : ''}${result.loyalty_change} loyalty`);
+  }
   renderInteraction();
-  toast(`+${coinGain} 💰 ${loyaltyChange >= 0 ? '+' : ''}${loyaltyChange} loyalty`);
+}
+
+function endInteraction() {
+  const ci = currentInteraction;
+  ci.phase = 'ended';
+  saveState();
+  renderInteraction();
+}
+
+function applyRewards(coinGain, loyaltyChange, quality) {
+  const ci = currentInteraction;
+  state.coins += coinGain;
+  state._todaySummary.coins += coinGain;
+  if (ci.turnCount === 0) {
+    state._todaySummary.totalCount++;
+    if (quality === 'correct') state._todaySummary.correctCount++;
+  }
+  const ratingImpact = quality === 'correct' ? 0.05 : quality === 'acceptable' ? -0.02 : quality === 'wrong' ? -0.15 : 0;
+  state._todaySummary.ratingChange += ratingImpact;
+  if (ci.customer.type === 'regular') {
+    const rid = ci.customer.id;
+    state.regulars[rid].loyalty = Math.max(0, Math.min(100, state.regulars[rid].loyalty + loyaltyChange));
+    if (state.regulars[rid].lastVisitDay !== state.day) {
+      state.regulars[rid].lastVisitDay = state.day;
+      state.regulars[rid].streak++;
+      state.regulars[rid].storyStage++;
+    }
+  }
 }
 
 function continueToNext() {
   queueIndex++;
   currentInteraction = null;
-  if (queueIndex >= dailyQueue.length) {
-    finishDay();
-  } else {
-    render();
-    setTimeout(serveNextCustomer, 100);
-  }
+  if (queueIndex >= dailyQueue.length) finishDay();
+  else { render(); setTimeout(serveNextCustomer, 100); }
 }
 
 function finishDay() {
-  // Apply rating change
   const change = state._todaySummary.ratingChange;
   state.rating = Math.max(1, Math.min(5, state.rating + change));
-  // Regulars who didn't visit lose streak
-  const visitedIds = new Set(dailyQueue.filter(c => c.type === 'regular').map(c => c.id));
+  const visitedIds = new Set(dailyQueue.slice(0, queueIndex).filter(c => c.type === 'regular').map(c => c.id));
   for (const rid of state.unlockedRegulars) {
-    if (!visitedIds.has(rid)) {
-      state.regulars[rid].streak = 0;
-    }
+    if (!visitedIds.has(rid)) state.regulars[rid].streak = 0;
   }
   saveState();
   render();
 }
 
 function showHint() {
-  if (currentInteraction.hintUsed) return;
-  currentInteraction.hintUsed = true;
-  const hint = currentInteraction.scenario.hint;
-  const speech = document.getElementById('speech-opening').parentElement;
+  const ci = currentInteraction;
+  if (ci.hintUsed) return;
+  ci.hintUsed = true;
+  const hint = ci.scenario.hint;
+  const speeches = document.querySelectorAll('.speech');
+  const lastSpeech = speeches[speeches.length - 1];
+  if (!lastSpeech) return;
   const hintBox = document.createElement('div');
   hintBox.className = 'hint-box mt-8';
   hintBox.innerHTML = `<b>Hint:</b> ${hint}<div class="small muted mt-8">Rewards reduced this order.</div>`;
-  speech.parentElement.insertBefore(hintBox, speech.nextSibling);
-  document.getElementById('hint-btn').style.opacity = '0.4';
+  lastSpeech.parentElement.insertBefore(hintBox, lastSpeech.nextSibling);
+  const btn = document.getElementById('hint-btn');
+  if (btn) btn.style.opacity = '0.4';
 }
 
 // ============ WORD POPUP ============
@@ -1289,7 +1567,7 @@ async function showWordPopup(event, word) {
   }
   popupEl = document.createElement('div');
   popupEl.className = 'word-popup';
-  popupEl.textContent = translation || 'Looking up...';
+  popupEl.textContent = translation || 'Looking up…';
   document.body.appendChild(popupEl);
   const rect = event.target.getBoundingClientRect();
   popupEl.style.left = Math.max(8, rect.left + rect.width / 2 - popupEl.offsetWidth / 2) + 'px';
@@ -1310,111 +1588,113 @@ async function showWordPopup(event, word) {
 }
 
 // ============ TTS ============
+let ttsReady = false;
+let ttsWarmedUp = false;
+
+function warmUpTTS() {
+  if (ttsWarmedUp || !('speechSynthesis' in window)) return;
+  ttsWarmedUp = true;
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+
+document.addEventListener('touchstart', warmUpTTS, { once: true });
+document.addEventListener('click', warmUpTTS, { once: true });
+
 function speak(text, voiceHint) {
   if (!('speechSynthesis' in window)) { toast('No speech support'); return; }
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = voiceHint.lang || 'es-ES';
-  u.pitch = voiceHint.pitch || 1;
-  u.rate = voiceHint.rate || 1;
-  const voices = window.speechSynthesis.getVoices();
-  const match = voices.find(v => v.lang === u.lang) || voices.find(v => v.lang.startsWith(u.lang.split('-')[0]));
-  if (match) u.voice = match;
-  window.speechSynthesis.speak(u);
+  if (!text) return;
+
+  // iOS speechSynthesis can hang: cancel + defer
+  try {
+    window.speechSynthesis.cancel();
+  } catch {}
+
+  // iOS bug: if speaking after cancel, need a small delay
+  setTimeout(() => {
+    try {
+      // Truncate very long text to avoid iOS freeze
+      const safeText = text.length > 200 ? text.slice(0, 200) + '…' : text;
+      const u = new SpeechSynthesisUtterance(safeText);
+      u.lang = voiceHint.lang || 'es-ES';
+      u.pitch = voiceHint.pitch || 1;
+      u.rate = voiceHint.rate || 1;
+      u.volume = 1;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length) {
+        const match = voices.find(v => v.lang === u.lang)
+                   || voices.find(v => v.lang.startsWith(u.lang.split('-')[0]));
+        if (match) u.voice = match;
+      }
+
+      u.onerror = (e) => {
+        console.warn('TTS error', e);
+      };
+
+      window.speechSynthesis.speak(u);
+
+      // iOS Safari sometimes silently fails after long idle. Watchdog:
+      setTimeout(() => {
+        if (window.speechSynthesis.paused) {
+          try { window.speechSynthesis.resume(); } catch {}
+        }
+      }, 300);
+    } catch (e) {
+      console.warn('speak failed', e);
+      toast('Speech error');
+    }
+  }, 100);
 }
 
-// ============ MIC (speech recognition) ============
-let recognition = null;
-function startMic(btn) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { toast('No speech recognition on this device'); return; }
-  if (recognition) { recognition.stop(); recognition = null; btn.classList.remove('recording'); return; }
-  recognition = new SR();
-  recognition.lang = 'es-ES';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 3;
-  btn.classList.add('recording');
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    matchSpokenToOption(transcript);
-  };
-  recognition.onend = () => { btn.classList.remove('recording'); recognition = null; };
-  recognition.onerror = (e) => { toast('Mic error: ' + e.error); btn.classList.remove('recording'); recognition = null; };
-  recognition.start();
-}
-
-function matchSpokenToOption(transcript) {
-  const clean = transcript.toLowerCase().replace(/[.,!?¿¡]/g, '');
-  toast('Heard: "' + transcript + '"');
-  const { scenario, phase } = currentInteraction;
-  if (phase !== 'ordering') return;
-  // Match spoken to nearest option
-  let best = -1, bestScore = 0;
-  scenario.options.forEach((opt, i) => {
-    const target = opt.spanish.toLowerCase().replace(/[.,!?¿¡]/g, '');
-    const score = fuzzyMatch(clean, target);
-    if (score > bestScore) { bestScore = score; best = i; }
-  });
-  if (bestScore > 0.4 && best >= 0) {
-    setTimeout(() => chooseOption(best), 400);
-  } else {
-    toast("Couldn't match to an option. Try tapping instead.");
-  }
-}
-
-function fuzzyMatch(a, b) {
-  const wa = new Set(a.split(/\s+/).filter(w => w.length > 2));
-  const wb = new Set(b.split(/\s+/).filter(w => w.length > 2));
-  let match = 0;
-  for (const w of wa) if (wb.has(w)) match++;
-  const size = Math.max(wa.size, wb.size, 1);
-  return match / size;
-}
-
-// ============ REGULARS SCREEN ============
+// ============ REGULARS ============
 function renderRegulars() {
   if (!state.unlockedRegulars.length) {
     return `<div class="empty"><h3>No regulars yet</h3><p>They'll show up as you play.</p></div>`;
   }
-  return state.unlockedRegulars.map(rid => {
-    const r = STARTER_REGULARS.find(x => x.id === rid);
-    if (!r) return '';
-    const s = state.regulars[rid];
-    const daysSince = state.day - s.lastVisitDay;
-    return `
-      <div class="regular-card">
-        <div class="regular-header">
-          <div class="regular-avatar">${r.emoji}</div>
-          <div style="flex:1;">
-            <div class="regular-name">${r.name}</div>
-            <div class="regular-meta">${r.archetype}</div>
-            <div class="loyalty-bar"><div class="loyalty-fill" style="width:${s.loyalty}%;"></div></div>
-            <div class="regular-meta">Loyalty ${s.loyalty}%${s.streak > 0 ? ' · 🔥 ' + s.streak : ''}${s.lastVisitDay > 0 ? ' · Last visit: ' + (daysSince === 0 ? 'today' : daysSince + 'd ago') : ''}</div>
+  return `
+    <p class="muted small mb-8" style="text-align:center;">More regulars unlock as you progress (day 3, 5, 7).</p>
+    ${state.unlockedRegulars.map(rid => {
+      const r = STARTER_REGULARS.find(x => x.id === rid);
+      if (!r) return '';
+      const s = state.regulars[rid];
+      const daysSince = state.day - s.lastVisitDay;
+      return `
+        <div class="regular-card">
+          <div class="regular-header">
+            <div class="regular-avatar">${r.emoji}</div>
+            <div style="flex:1;">
+              <div class="regular-name">${r.name}</div>
+              <div class="regular-meta">${r.archetype}</div>
+              <div class="loyalty-bar"><div class="loyalty-fill" style="width:${s.loyalty}%;"></div></div>
+              <div class="regular-meta">Loyalty ${s.loyalty}%${s.streak > 0 ? ' · 🔥 ' + s.streak : ''}${s.lastVisitDay > 0 ? ' · Last visit: ' + (daysSince === 0 ? 'today' : daysSince + 'd ago') : ''}</div>
+            </div>
           </div>
+          <div class="regular-meta" style="margin:8px 0;">${r.backstory}</div>
+          ${s.storyBeats.length ? `
+            <div class="story-beat">
+              <em>Latest story beat</em>
+              ${s.storyBeats[s.storyBeats.length - 1]}
+            </div>
+          ` : '<p class="small muted">No stories yet. Serve them a few times.</p>'}
         </div>
-        <div class="regular-meta" style="margin:8px 0;">${r.backstory}</div>
-        ${s.storyBeats.length ? `
-          <div class="story-beat">
-            <em>Latest story beat</em>
-            ${s.storyBeats[s.storyBeats.length - 1]}
-          </div>
-        ` : '<p class="small muted">No stories yet. Serve them a few times.</p>'}
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('')}
+  `;
 }
 
-// ============ UPGRADE SCREEN ============
+// ============ UPGRADE ============
 function renderUpgrade() {
-  const items = Object.entries(DOMAINS).map(([id, d]) => {
+  return Object.entries(DOMAINS).map(([id, d]) => {
     const owned = state.unlockedDomains.includes(id);
     const affordable = state.coins >= d.cost;
     return `
       <div class="upgrade-item">
         <div class="upgrade-header">
-          <div>
-            <div class="upgrade-title">${getDomainEmoji(id)} ${d.name}</div>
-          </div>
+          <div><div class="upgrade-title">${getDomainEmoji(id)} ${d.name}</div></div>
           ${owned ? '<div class="upgrade-cost owned">Unlocked</div>' : `<div class="upgrade-cost">${d.cost} 💰</div>`}
         </div>
         <div class="upgrade-desc">${d.desc}</div>
@@ -1425,14 +1705,11 @@ function renderUpgrade() {
       </div>
     `;
   }).join('');
-  return items;
 }
 
-// ============ DIARY SCREEN ============
+// ============ DIARY ============
 function renderDiary() {
-  if (!state.diary.length) {
-    return `<div class="empty"><h3>Nothing yet</h3><p>Your day-by-day log will appear here.</p></div>`;
-  }
+  if (!state.diary.length) return `<div class="empty"><h3>Nothing yet</h3><p>Your day-by-day log will appear here.</p></div>`;
   const grouped = {};
   for (const entry of state.diary) {
     if (!grouped[entry.day]) grouped[entry.day] = [];
@@ -1448,7 +1725,6 @@ function renderDiary() {
 
 // ============ HANDLERS ============
 function attachHandlers() {
-  // Setup
   const save = document.getElementById('setup-save');
   if (save) save.addEventListener('click', () => {
     const key = document.getElementById('setup-key').value.trim();
@@ -1458,16 +1734,22 @@ function attachHandlers() {
       render();
     }
   });
-  // Open café
+
   const openBtn = document.getElementById('open-btn');
   if (openBtn) openBtn.addEventListener('click', async () => {
     await startDay();
     setTimeout(serveNextCustomer, 200);
   });
-  // Next customer
+
   const nextBtn = document.getElementById('next-customer');
   if (nextBtn) nextBtn.addEventListener('click', serveNextCustomer);
-  // Next day
+
+  const closeEarly = document.getElementById('close-early');
+  if (closeEarly) closeEarly.addEventListener('click', () => {
+    queueIndex = dailyQueue.length;
+    finishDay();
+  });
+
   const nextDay = document.getElementById('next-day');
   if (nextDay) nextDay.addEventListener('click', () => {
     state.day++;
@@ -1478,7 +1760,7 @@ function attachHandlers() {
     saveState();
     render();
   });
-  // Upgrades
+
   document.querySelectorAll('[data-buy]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.buy;
@@ -1486,7 +1768,7 @@ function attachHandlers() {
       if (state.coins < d.cost) return;
       state.coins -= d.cost;
       state.unlockedDomains.push(id);
-      state.diary.unshift({ day: state.day, text: `Unlocked ${d.name}. New vocab coming your way.` });
+      state.diary.unshift({ day: state.day, text: `Unlocked ${d.name}.` });
       saveState();
       toast(`${d.name} unlocked!`);
       render();
@@ -1507,7 +1789,7 @@ function toast(msg) {
 // ============ BOOTSTRAP ============
 if ('speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.onvoiceschanged = () => { ttsReady = true; };
 }
 
 renderStats();
