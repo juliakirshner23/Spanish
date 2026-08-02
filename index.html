@@ -21,6 +21,7 @@
     --goldDim: #8a6030;
     --red: #d94f4f;
     --green: #3a9e6a;
+    --sun: #d9942e;
   }
 
   html, body {
@@ -143,6 +144,10 @@
     background: radial-gradient(ellipse at 20% 50%, rgba(58,158,106,0.08) 0%, transparent 60%);
   }
 
+  .app-card.sun::before {
+    background: radial-gradient(ellipse at 20% 50%, rgba(217,148,46,0.10) 0%, transparent 60%);
+  }
+
   .app-card:hover, .app-card:active {
     border-color: var(--textLight);
     transform: translateY(-1px);
@@ -194,6 +199,11 @@
   .green .app-name-badge {
     background: rgba(58,158,106,0.12);
     color: var(--green);
+  }
+
+  .sun .app-name-badge {
+    background: rgba(217,148,46,0.15);
+    color: var(--sun);
   }
 
   .app-desc {
@@ -250,6 +260,16 @@
         <span class="app-name-badge">New</span>
       </div>
       <div class="app-desc">Reading · Grammar · Writing · Listening comprehension</div>
+      <span class="app-arrow">›</span>
+    </a>
+
+    <a href="cafesol.html" class="app-card sun">
+      <span class="app-icon">☀️</span>
+      <div class="app-name">
+        Café Sol
+        <span class="app-name-badge">Game</span>
+      </div>
+      <div class="app-desc">Run a Spanish café · Serve customers · Build regulars</div>
       <span class="app-arrow">›</span>
     </a>
   </div>

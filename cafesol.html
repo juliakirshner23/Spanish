@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Café Sol</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --panel: #f3ead8;
+    --border: #e8ddc7;
+    --gold: #b5813a;
+    --gold-dark: #8f6428;
+    --text: #2a2218;
+    --muted: #6b5d4a;
+    --danger: #b34d3a;
+    --success: #4a7c3a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overscroll-behavior: none; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
+  h1, h2, h3 { font-weight: 600; }
+
+  /* Header */
+  .app-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .app-title { font-size: 18px; font-weight: 700; color: var(--gold); }
+  .stats { display: flex; gap: 8px; font-size: 12px; }
+  .stat { background: var(--panel); padding: 4px 10px; border-radius: 12px; font-weight: 600; }
+
+  /* Main */
+  main { flex: 1; padding: 16px; overflow-y: auto; padding-bottom: 80px; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 10;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    color: var(--muted);
+    padding: 4px 12px;
+    background: none;
+  }
+  .nav-item.active { color: var(--gold); font-weight: 700; }
+  .nav-icon { font-size: 22px; line-height: 1; }
+
+  /* Cards */
+  .card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-panel {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: var(--gold);
+    color: var(--bg);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+  }
+  .btn:disabled { opacity: 0.4; }
+  .btn-secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--danger); }
+  .btn-small { padding: 8px 12px; font-size: 13px; width: auto; }
+
+  /* Customer view */
+  .customer-scene {
+    background: linear-gradient(180deg, var(--panel) 0%, #e8d9b8 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .day-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .customer-queue { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .queue-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--gold);
+    color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    border: 2px solid var(--bg);
+  }
+  .queue-dot.done { opacity: 0.35; }
+  .queue-dot.current { transform: scale(1.15); box-shadow: 0 0 0 3px var(--gold); }
+
+  .customer-card {
+    background: var(--bg);
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 10px;
+  }
+  .customer-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .customer-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--gold); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .customer-name { font-weight: 700; font-size: 14px; }
+  .customer-meta { font-size: 11px; color: var(--muted); }
+
+  .speech {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .speech-controls {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .icon-btn.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+  .icon-btn.recording { background: var(--danger); color: var(--bg); border-color: var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: 0.6; } }
+
+  .word-tap {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+  }
+  .word-tap:active, .word-tap.tapped {
+    border-bottom-color: var(--gold);
+    background: rgba(181, 129, 58, 0.15);
+  }
+
+  .option-btn {
+    display: block;
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .option-btn:active { background: var(--panel); }
+  .option-btn.correct { background: rgba(74, 124, 58, 0.15); border-color: var(--success); }
+  .option-btn.wrong { background: rgba(179, 77, 58, 0.12); border-color: var(--danger); }
+  .option-btn.disabled { pointer-events: none; opacity: 0.6; }
+  .option-en { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* Word popup */
+  .word-popup {
+    position: fixed;
+    background: var(--text);
+    color: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-width: 200px;
+    pointer-events: none;
+  }
+  .word-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text);
+  }
+
+  /* Regulars */
+  .regular-card {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .regular-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .regular-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--gold); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .regular-name { font-size: 16px; font-weight: 700; }
+  .regular-meta { font-size: 11px; color: var(--muted); }
+  .loyalty-bar {
+    height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;
+    margin: 4px 0;
+  }
+  .loyalty-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.4s; }
+  .story-beat {
+    background: var(--bg);
+    border-left: 3px solid var(--gold);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .story-beat em { color: var(--muted); font-size: 11px; display: block; margin-bottom: 4px; }
+  .streak-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* Upgrades */
+  .upgrade-item {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .upgrade-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; margin-bottom: 6px;
+  }
+  .upgrade-title { font-size: 15px; font-weight: 700; }
+  .upgrade-cost {
+    background: var(--gold);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .upgrade-cost.owned { background: var(--success); }
+  .upgrade-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .upgrade-vocab {
+    font-size: 11px; color: var(--muted); margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Diary */
+  .diary-entry {
+    background: var(--panel);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .diary-date { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+
+  /* Setup / API */
+  .setup-notice {
+    background: rgba(179, 77, 58, 0.1);
+    border: 1px solid var(--danger);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .setup-notice a { color: var(--gold); font-weight: 600; }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .spinner {
+    display: inline-block;
+    width: 24px; height: 24px;
+    border: 3px solid var(--panel);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Day summary */
+  .summary-stat {
+    display: flex; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+  }
+  .summary-stat:last-child { border-bottom: none; }
+
+  /* Hint modal */
+  .hint-box {
+    background: rgba(181, 129, 58, 0.1);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .empty h3 { color: var(--text); font-size: 16px; margin-bottom: 8px; }
+
+  /* Rating stars */
+  .rating-stars { color: var(--gold); letter-spacing: 2px; }
+
+  /* Utility */
+  .row { display: flex; align-items: center; gap: 8px; }
+  .space { flex: 1; }
+  .center { text-align: center; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .small { font-size: 12px; }
+  .mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mb-8 { margin-bottom: 8px; }
+
+  /* Home screen big button */
+  .open-cafe {
+    background: var(--gold);
+    color: var(--bg);
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 16px;
+    box-shadow: 0 4px 12px rgba(181, 129, 58, 0.3);
+  }
+  .open-cafe .sub { font-size: 12px; font-weight: 400; opacity: 0.85; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title">☀ Café Sol</div>
+  <div class="stats">
+    <div class="stat" id="stat-coins">💰 0</div>
+    <div class="stat" id="stat-rating">⭐ 5.0</div>
+    <div class="stat" id="stat-day">Day 1</div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<div class="bottom-nav">
+  <button class="nav-item active" data-tab="cafe"><div class="nav-icon">☕</div>Café</button>
+  <button class="nav-item" data-tab="regulars"><div class="nav-icon">👥</div>Regulars</button>
+  <button class="nav-item" data-tab="upgrade"><div class="nav-icon">🛠</div>Upgrade</button>
+  <button class="nav-item" data-tab="diary"><div class="nav-icon">📖</div>Diary</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ CONSTANTS ============
+const STATE_KEY = 'cafesol_state';
+const CARDS_KEY = 'sp_cards';
+const API_KEY_KEY = 'sp_api_key';
+const MODEL = 'claude-haiku-4-5';
+
+const DOMAINS = {
+  cafe: {
+    name: 'Café counter',
+    unlocked: true,
+    cost: 0,
+    desc: 'Coffee, tea, quick breakfast orders. The starter domain.',
+    vocab_focus: 'greetings, drinks, sizes, sugar/milk, politeness (por favor, gracias)'
+  },
+  bakery: {
+    name: 'Bakery counter',
+    unlocked: false,
+    cost: 120,
+    desc: 'Fresh bread, pastries, dietary needs. Customers ask about ingredients.',
+    vocab_focus: 'food, ingredients (harina, mantequilla, huevos), dietary (sin gluten, vegano), quantities'
+  },
+  flowers: {
+    name: 'Flower stand',
+    unlocked: false,
+    cost: 200,
+    desc: 'Bouquets, occasions, gifts. Emotional purchases.',
+    vocab_focus: 'colors, flowers (rosas, girasoles), occasions (cumpleaños, aniversario), emotions'
+  },
+  bookshop: {
+    name: 'Bookshop corner',
+    unlocked: false,
+    cost: 280,
+    desc: 'Recommendations, opinions, hobbies. Longer conversations.',
+    vocab_focus: 'books/genres, opinions (me encanta, aburrido), recommendations, hobbies'
+  },
+  terrace: {
+    name: 'Terrace + tourists',
+    unlocked: false,
+    cost: 380,
+    desc: 'Tourists asking directions, weather small talk, travel tips.',
+    vocab_focus: 'directions (izquierda, derecha, recto), weather, travel, days/times'
+  },
+  market: {
+    name: 'Sunday market stall',
+    unlocked: false,
+    cost: 500,
+    desc: 'Weekend market. Shopping, produce, numbers, light bargaining.',
+    vocab_focus: 'produce, numbers, prices (euros, céntimos), quantities, bargaining phrases'
+  },
+  tapas: {
+    name: 'Evening tapas hours',
+    unlocked: false,
+    cost: 650,
+    desc: 'Evening scene. Food sharing, drinks, going out.',
+    vocab_focus: 'tapas dishes, drinks (vino, cerveza), sharing, evening plans'
+  },
+  exchange: {
+    name: 'Language exchange nights',
+    unlocked: false,
+    cost: 850,
+    desc: 'Regulars stay to chat. Current events, opinions, deeper conversation.',
+    vocab_focus: 'current topics, opinions, abstract nouns, conjunctions, complex sentence structures'
+  },
+  delivery: {
+    name: 'Phone delivery service',
+    unlocked: false,
+    cost: 1000,
+    desc: 'Phone orders. Addresses, urgency, misheard requests.',
+    vocab_focus: 'addresses, phone Spanish (¿bueno?, ¿diga?), numbers, urgency'
+  },
+  bulletin: {
+    name: 'Community bulletin board',
+    unlocked: false,
+    cost: 1200,
+    desc: 'Neighbors post invitations, events, requests.',
+    vocab_focus: 'invitations, dates, times, RSVPs (voy, no puedo), future tense'
+  },
+  mexico: {
+    name: 'Second location: Ciudad de México',
+    unlocked: false,
+    cost: 1500,
+    desc: 'Mexico City branch. Regional slang, different accent, new customers.',
+    vocab_focus: 'Mexican slang (chido, órale, ahorita), Mexican food vocab, "ustedes" usage'
+  },
+  events: {
+    name: 'Neighborhood events',
+    unlocked: false,
+    cost: 2000,
+    desc: 'Festivals and holidays. Special menus, seasonal customers.',
+    vocab_focus: 'holidays (Navidad, Reyes, San Fermín, Día de los Muertos), traditions, seasonal food'
+  }
+};
+
+const STARTER_REGULARS = [
+  {
+    id: 'elena',
+    name: 'Doña Elena',
+    emoji: '👵',
+    voice: { lang: 'es-ES', pitch: 1.1, rate: 0.85 },
+    archetype: 'elderly widow, warm but a little lonely',
+    backstory: 'Widowed 3 years. Three grandchildren she rarely sees. Comes for chocolate caliente most mornings. Was a schoolteacher for 40 years, corrects your Spanish gently.',
+    unlocked_at_day: 1
+  },
+  {
+    id: 'miguel',
+    name: 'Miguel',
+    emoji: '🧑‍💼',
+    voice: { lang: 'es-ES', pitch: 0.9, rate: 1.0 },
+    archetype: 'young professional, ambitious but stressed',
+    backstory: 'Software engineer, job-hunting after a layoff. Orders café con leche and a tostada, sin azúcar. Sometimes forgets his wallet. Interviewing at different companies.',
+    unlocked_at_day: 1
+  },
+  {
+    id: 'sofia',
+    name: 'Sofía',
+    emoji: '👩‍🎨',
+    voice: { lang: 'es-MX', pitch: 1.15, rate: 1.05 },
+    archetype: 'art student, curious and chatty',
+    backstory: 'Just moved from Mexico City to study fine art. Homesick sometimes. Draws people at the café. Orders whatever is new. Loves recommendations.',
+    unlocked_at_day: 3
+  },
+  {
+    id: 'carlos',
+    name: 'Don Carlos',
+    emoji: '🧓',
+    voice: { lang: 'es-ES', pitch: 0.85, rate: 0.9 },
+    archetype: 'retired taxi driver, opinionated',
+    backstory: 'Drove a Madrid taxi for 45 years. Has strong opinions on football, politics, and the price of everything. Reads three newspapers with his café solo.',
+    unlocked_at_day: 5
+  },
+  {
+    id: 'lucia',
+    name: 'Lucía',
+    emoji: '👩‍⚕️',
+    voice: { lang: 'es-ES', pitch: 1.05, rate: 1.1 },
+    archetype: 'nurse, tired but friendly',
+    backstory: 'Emergency room nurse, works long shifts. Comes in for strong coffee at odd hours. Has a golden retriever named Pipa. Dating someone new.',
+    unlocked_at_day: 7
+  }
+];
+
+// ============ STATE ============
+function defaultState() {
+  return {
+    coins: 50,
+    rating: 5.0,
+    day: 1,
+    ordersToday: 0,
+    ratingHistory: [5, 5, 5, 5, 5],
+    unlockedDomains: ['cafe'],
+    unlockedRegulars: ['elena', 'miguel'],
+    regulars: {
+      elena: { loyalty: 60, streak: 0, lastVisitDay: 0, storyStage: 0, storyBeats: [] },
+      miguel: { loyalty: 55, streak: 0, lastVisitDay: 0, storyStage: 0, storyBeats: [] }
+    },
+    wordCoverage: {},
+    diary: [],
+    lastPlayed: null
+  };
+}
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STATE_KEY));
+    if (!s) return defaultState();
+    return { ...defaultState(), ...s };
+  } catch { return defaultState(); }
+}
+
+function saveState() {
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+  renderStats();
+}
+
+function getVocabDeck() {
+  try {
+    return JSON.parse(localStorage.getItem(CARDS_KEY)) || [];
+  } catch { return []; }
+}
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_KEY);
+}
+
+// ============ WORD COVERAGE ============
+function normalizeWord(w) {
+  return String(w).toLowerCase()
+    .replace(/[.,!?¿¡:;"'()]/g, '')
+    .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
+    .trim();
+}
+
+function recordWordSeen(words) {
+  const now = state.day;
+  for (const w of words) {
+    const key = normalizeWord(w);
+    if (!key) continue;
+    if (!state.wordCoverage[key]) {
+      state.wordCoverage[key] = { seen: 0, correct: 0, lastSeen: 0 };
+    }
+    state.wordCoverage[key].seen++;
+    state.wordCoverage[key].lastSeen = now;
+  }
+}
+
+function getPriorityWords() {
+  const deck = getVocabDeck();
+  if (!deck.length) return [];
+  const cov = state.wordCoverage;
+  // Sort deck words by: unseen > least recently seen > lowest accuracy
+  const scored = deck.map(card => {
+    const spanish = card.spanish || card.front || card.term || '';
+    const key = normalizeWord(spanish);
+    const info = cov[key] || { seen: 0, lastSeen: -999 };
+    // Score: lower is higher priority
+    const score = info.seen * 100 + info.lastSeen;
+    return { spanish, english: card.english || card.back || card.definition || '', score, key };
+  });
+  scored.sort((a, b) => a.score - b.score);
+  // Return top 15 priority words
+  return scored.slice(0, 15);
+}
+
+function getDifficulty() {
+  const deckSize = getVocabDeck().length;
+  if (deckSize < 50) return 'A1 beginner';
+  if (deckSize < 150) return 'A2 elementary';
+  if (deckSize < 300) return 'B1 intermediate';
+  if (deckSize < 500) return 'B2 upper-intermediate';
+  return 'C1 advanced';
+}
+
+// ============ API ============
+async function callApi(prompt, useJson = true) {
+  const key = getApiKey();
+  if (!key) throw new Error('NO_API_KEY');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error('API_ERROR: ' + res.status + ' ' + text.slice(0, 200));
+  }
+  const data = await res.json();
+  let text = data.content[0].text.trim();
+  if (useJson) {
+    text = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+    return JSON.parse(text);
+  }
+  return text;
+}
+
+// ============ SCENARIO GENERATION ============
+async function generateScenario(customer, context) {
+  const priority = getPriorityWords().slice(0, 12);
+  const priorityList = priority.map(p => `${p.spanish} (${p.english})`).join(', ');
+  const deck = getVocabDeck().slice(0, 200);
+  const deckList = deck.map(c => c.spanish || c.front || c.term).filter(Boolean).join(', ');
+  const domain = DOMAINS[context.domain];
+  const difficulty = getDifficulty();
+
+  let customerBlock;
+  if (customer.type === 'regular') {
+    const r = STARTER_REGULARS.find(x => x.id === customer.id);
+    const state_r = state.regulars[customer.id];
+    customerBlock = `REGULAR CUSTOMER:
+Name: ${r.name}
+Archetype: ${r.archetype}
+Backstory: ${r.backstory}
+Current loyalty: ${state_r.loyalty}/100
+Visit streak: ${state_r.streak} days
+Story stage: ${state_r.storyStage} (progress their storyline slightly)
+Previous story beats: ${state_r.storyBeats.slice(-3).join(' | ') || 'none yet'}`;
+  } else {
+    customerBlock = `ONE-TIME CUSTOMER for ${domain.name}:
+Generate a plausible walk-in customer (name, one-line vibe) fitting this domain.`;
+  }
+
+  const prompt = `You are generating a short Spanish roleplay for a language learner running a café called Café Sol.
+
+LEARNER LEVEL: ${difficulty}
+DOMAIN: ${domain.name} — ${domain.desc}
+VOCAB FOCUS FOR DOMAIN: ${domain.vocab_focus}
+DAY: ${state.day}
+TIME: ${context.timeOfDay}
+
+LEARNER'S PRIORITY WORDS (work in 3-5 of these naturally): ${priorityList}
+LEARNER'S FULL DECK (stay mostly within these + very common words): ${deckList}
+
+${customerBlock}
+
+Generate a 1-turn interaction: customer says something, learner picks a response, customer reacts, done.
+
+Return ONLY valid JSON (no markdown, no prose):
+{
+  "customer_name": "display name",
+  "customer_emoji": "single emoji fitting them",
+  "opening": "Spanish greeting + order/statement, 1-2 sentences using their level",
+  "opening_en": "English translation",
+  "hint": "What they actually want, in plain English",
+  "vocab_used": ["array", "of", "spanish", "words", "in", "opening"],
+  "options": [
+    {
+      "spanish": "response option 1",
+      "english": "translation",
+      "quality": "correct",
+      "reaction": "customer's Spanish reaction if picked",
+      "reaction_en": "English translation of reaction",
+      "coins": 15,
+      "loyalty": 4
+    },
+    {
+      "spanish": "response option 2",
+      "english": "translation",
+      "quality": "acceptable",
+      "reaction": "Spanish reaction",
+      "reaction_en": "English",
+      "coins": 8,
+      "loyalty": 1
+    },
+    {
+      "spanish": "response option 3",
+      "english": "translation",
+      "quality": "wrong",
+      "reaction": "Spanish reaction (customer confused or annoyed)",
+      "reaction_en": "English",
+      "coins": 2,
+      "loyalty": -3
+    }
+  ],
+  "story_beat": "one sentence English summary of this interaction (for the diary/regular's story). For regulars, advance their arc.",
+  "closing": "customer's farewell in Spanish",
+  "closing_en": "English"
+}
+
+RULES:
+- Use vocab at the learner's level. Do NOT introduce many new hard words.
+- For regulars, reference their backstory and progress the storyline.
+- Options must be genuinely different in meaning, not just phrasing variants.
+- "correct" = fulfills what customer wants. "acceptable" = polite but suboptimal. "wrong" = wrong item/misunderstanding.
+- Keep customer Spanish 1-3 short sentences.
+- Never break the fourth wall.`;
+
+  return await callApi(prompt, true);
+}
+
+// ============ TABS / ROUTING ============
+let currentTab = 'cafe';
+let currentInteraction = null; // { customer, scenario, turnState }
+let dailyQueue = [];
+let queueIndex = 0;
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  render();
+}
+
+function render() {
+  const main = document.getElementById('main');
+  if (!getApiKey()) {
+    main.innerHTML = renderSetup();
+    return;
+  }
+  if (currentTab === 'cafe') main.innerHTML = renderCafe();
+  else if (currentTab === 'regulars') main.innerHTML = renderRegulars();
+  else if (currentTab === 'upgrade') main.innerHTML = renderUpgrade();
+  else if (currentTab === 'diary') main.innerHTML = renderDiary();
+  attachHandlers();
+  if (currentTab === 'cafe' && currentInteraction) {
+    renderInteraction();
+  }
+}
+
+function renderStats() {
+  document.getElementById('stat-coins').textContent = '💰 ' + Math.round(state.coins);
+  document.getElementById('stat-rating').textContent = '⭐ ' + state.rating.toFixed(1);
+  document.getElementById('stat-day').textContent = 'Day ' + state.day;
+}
+
+// ============ SETUP SCREEN ============
+function renderSetup() {
+  const deck = getVocabDeck();
+  return `
+    <div class="setup-notice">
+      <b>API key needed.</b> Café Sol uses your Anthropic API key (same one flashcards.html uses).
+      Set it in flashcards.html first, or paste it below.
+    </div>
+    <input type="password" id="setup-key" placeholder="sk-ant-..." style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:14px;">
+    <button class="btn" id="setup-save">Save key</button>
+    <p class="muted mt-16">Deck: ${deck.length} words loaded from flashcards.</p>
+  `;
+}
+
+// ============ CAFE (HOME) SCREEN ============
+function renderCafe() {
+  const deck = getVocabDeck();
+  if (!deck.length) {
+    return `
+      <div class="empty">
+        <h3>No vocab loaded</h3>
+        <p>Sync your vocabulary in flashcards.html first.</p>
+      </div>
+    `;
+  }
+
+  if (currentInteraction) {
+    return `<div id="interaction-slot"></div>`;
+  }
+
+  if (dailyQueue.length && queueIndex < dailyQueue.length) {
+    // Mid-day: show queue and next customer button
+    return renderMidDay();
+  }
+
+  if (dailyQueue.length && queueIndex >= dailyQueue.length) {
+    return renderDaySummary();
+  }
+
+  return renderDayStart();
+}
+
+function renderDayStart() {
+  const dayPart = getDayPart();
+  return `
+    <div class="card-panel">
+      <div class="day-badge">Day ${state.day} · ${dayPart.name}</div>
+      <p>${dayPart.flavor}</p>
+      <p class="muted mt-8">Rating: <span class="rating-stars">${renderStars(state.rating)}</span> ${state.rating.toFixed(1)}</p>
+    </div>
+    <button class="open-cafe" id="open-btn">
+      Open the café ☀
+      <div class="sub">Serve today's customers</div>
+    </button>
+    <p class="muted mt-16 center small">Each day = 4-6 customers. Takes ~5 min.</p>
+  `;
+}
+
+function renderMidDay() {
+  const dots = dailyQueue.map((c, i) => {
+    let cls = 'queue-dot';
+    if (i < queueIndex) cls += ' done';
+    if (i === queueIndex) cls += ' current';
+    return `<div class="${cls}">${c.emoji || '👤'}</div>`;
+  }).join('');
+  return `
+    <div class="customer-scene">
+      <div class="day-badge">Day ${state.day} · Customer ${queueIndex + 1}/${dailyQueue.length}</div>
+      <div class="customer-queue">${dots}</div>
+    </div>
+    <button class="btn" id="next-customer">Serve next customer →</button>
+  `;
+}
+
+function renderDaySummary() {
+  const summary = state._todaySummary || { coins: 0, ratingChange: 0, correctCount: 0, totalCount: 0, storyBeats: [] };
+  return `
+    <div class="card-panel center">
+      <h2 style="color:var(--gold);margin-bottom:8px;">Day ${state.day} complete</h2>
+      <div class="rating-stars" style="font-size:24px;">${renderStars(state.rating)}</div>
+      <p class="muted small mt-8">Rating: ${state.rating.toFixed(1)}</p>
+    </div>
+    <div class="card">
+      <div class="summary-stat"><span>Customers served</span><b>${summary.totalCount}</b></div>
+      <div class="summary-stat"><span>Correct orders</span><b>${summary.correctCount}/${summary.totalCount}</b></div>
+      <div class="summary-stat"><span>Coins earned</span><b>+${summary.coins} 💰</b></div>
+      <div class="summary-stat"><span>Rating change</span><b>${summary.ratingChange >= 0 ? '+' : ''}${summary.ratingChange.toFixed(2)} ⭐</b></div>
+    </div>
+    ${summary.storyBeats.length ? `
+      <div class="card">
+        <h3 style="font-size:14px;margin-bottom:8px;">Today's stories</h3>
+        ${summary.storyBeats.map(b => `<div class="story-beat" style="margin-bottom:6px;">${b}</div>`).join('')}
+      </div>
+    ` : ''}
+    <button class="btn mt-16" id="next-day">Close up · Start Day ${state.day + 1}</button>
+  `;
+}
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  let s = '★'.repeat(full);
+  if (half) s += '⯨';
+  while (s.length < 5) s += '☆';
+  return s.slice(0, 5);
+}
+
+function getDayPart() {
+  const parts = [
+    { name: 'Morning', flavor: 'Sun coming up over the plaza. Regulars trickle in for their usual.' },
+    { name: 'Late morning', flavor: 'The rush is picking up. Tourists start finding you.' },
+    { name: 'Lunch hour', flavor: 'Busiest stretch. Orders come fast.' },
+    { name: 'Afternoon', flavor: 'The lull. Regulars linger. Perfect for conversation.' },
+    { name: 'Golden hour', flavor: 'Warm light. The evening crowd starts arriving.' }
+  ];
+  return parts[state.day % parts.length];
+}
+
+// ============ CUSTOMER QUEUE GENERATION ============
+function generateQueue() {
+  const queue = [];
+  const dayNum = state.day;
+  // Unlock new regulars
+  for (const r of STARTER_REGULARS) {
+    if (dayNum >= r.unlocked_at_day && !state.unlockedRegulars.includes(r.id)) {
+      state.unlockedRegulars.push(r.id);
+      if (!state.regulars[r.id]) {
+        state.regulars[r.id] = { loyalty: 40, streak: 0, lastVisitDay: 0, storyStage: 0, storyBeats: [] };
+      }
+      state.diary.unshift({ day: dayNum, text: `${r.name} started coming to the café.` });
+    }
+  }
+  // Regulars: each has a chance to visit based on loyalty and streak
+  const visitingRegulars = [];
+  for (const rid of state.unlockedRegulars) {
+    const r = state.regulars[rid];
+    const daysSinceVisit = dayNum - r.lastVisitDay;
+    // Chance based on loyalty (higher = more likely) and days since visit
+    const baseChance = Math.min(0.85, 0.3 + r.loyalty / 200);
+    const gapMultiplier = Math.min(2, 1 + daysSinceVisit / 3);
+    const chance = Math.min(0.95, baseChance * gapMultiplier);
+    if (Math.random() < chance) {
+      visitingRegulars.push({ type: 'regular', id: rid, emoji: STARTER_REGULARS.find(x => x.id === rid).emoji });
+    }
+  }
+  // Fill queue: 4-6 customers total, mix of regulars and walk-ins
+  const target = 4 + Math.floor(Math.random() * 3);
+  queue.push(...visitingRegulars.slice(0, target - 1));
+  const walkInsNeeded = Math.max(1, target - queue.length);
+  for (let i = 0; i < walkInsNeeded; i++) {
+    // Pick a random unlocked domain, weighted toward newer unlocks
+    const doms = state.unlockedDomains;
+    const domain = doms[Math.floor(Math.random() * doms.length)];
+    queue.push({ type: 'walkin', domain, emoji: getDomainEmoji(domain) });
+  }
+  // Shuffle
+  queue.sort(() => Math.random() - 0.5);
+  return queue;
+}
+
+function getDomainEmoji(d) {
+  const map = {
+    cafe: '☕', bakery: '🥐', flowers: '🌸', bookshop: '📚',
+    terrace: '🧳', market: '🛒', tapas: '🍷', exchange: '💬',
+    delivery: '📞', bulletin: '📌', mexico: '🌮', events: '🎉'
+  };
+  return map[d] || '👤';
+}
+
+// ============ INTERACTION FLOW ============
+async function startDay() {
+  dailyQueue = generateQueue();
+  queueIndex = 0;
+  state._todaySummary = { coins: 0, ratingChange: 0, correctCount: 0, totalCount: 0, storyBeats: [] };
+  state.ordersToday = 0;
+  render();
+}
+
+async function serveNextCustomer() {
+  if (queueIndex >= dailyQueue.length) {
+    render();
+    return;
+  }
+  const customer = dailyQueue[queueIndex];
+  const domain = customer.type === 'walkin' ? customer.domain
+    : (Math.random() < 0.7 ? 'cafe' : state.unlockedDomains[Math.floor(Math.random() * state.unlockedDomains.length)]);
+  currentInteraction = { customer, domain, phase: 'loading' };
+  render();
+  try {
+    const scenario = await generateScenario(customer, {
+      domain,
+      timeOfDay: getDayPart().name.toLowerCase()
+    });
+    currentInteraction.scenario = scenario;
+    currentInteraction.phase = 'ordering';
+    currentInteraction.hintUsed = false;
+    renderInteraction();
+  } catch (e) {
+    toast('Error: ' + e.message);
+    currentInteraction = null;
+    render();
+  }
+}
+
+function renderInteraction() {
+  const slot = document.getElementById('interaction-slot') || document.getElementById('main');
+  const { customer, scenario, phase } = currentInteraction;
+
+  if (phase === 'loading') {
+    slot.innerHTML = `<div class="loading"><div class="spinner"></div><p class="mt-8">The next customer is coming in...</p></div>`;
+    return;
+  }
+
+  const emoji = scenario.customer_emoji || customer.emoji || '👤';
+  const name = scenario.customer_name || 'Customer';
+  const isRegular = customer.type === 'regular';
+  const regularState = isRegular ? state.regulars[customer.id] : null;
+
+  let content = `
+    <div class="customer-scene">
+      <div class="day-badge">Day ${state.day} · ${queueIndex + 1}/${dailyQueue.length}</div>
+      <div class="customer-card">
+        <div class="customer-head">
+          <div class="customer-avatar">${emoji}</div>
+          <div>
+            <div class="customer-name">${name}</div>
+            <div class="customer-meta">
+              ${isRegular ? `Regular · ${regularState.streak > 0 ? '🔥 ' + regularState.streak + ' day streak · ' : ''}Loyalty ${regularState.loyalty}%`
+                          : 'Walk-in · ' + DOMAINS[currentInteraction.domain].name}
+            </div>
+          </div>
+        </div>
+        <div class="speech" id="speech-opening">${wrapWords(scenario.opening)}</div>
+        <div class="speech-controls">
+          <button class="icon-btn" id="speak-opening" title="Play voice">🔊</button>
+          <button class="icon-btn" id="mic-btn" title="Speak your response">🎤</button>
+          <button class="icon-btn" id="hint-btn" title="Hint (small loyalty cost)">💡</button>
+          <div class="space"></div>
+        </div>
+  `;
+
+  if (phase === 'ordering') {
+    content += `
+      <div class="mt-16" id="options-list">
+        ${scenario.options.map((opt, i) => `
+          <button class="option-btn" data-option="${i}">
+            <div>${opt.spanish}</div>
+            <div class="option-en">${opt.english}</div>
+          </button>
+        `).join('')}
+      </div>
+    `;
+  } else if (phase === 'reacted') {
+    const opt = scenario.options[currentInteraction.chosenOption];
+    content += `
+      <div class="mt-16">
+        <div class="option-btn ${opt.quality}" style="opacity:1;">
+          <div>${opt.spanish}</div>
+          <div class="option-en">${opt.english}</div>
+        </div>
+      </div>
+      <div class="speech mt-16" id="speech-reaction">${wrapWords(opt.reaction)}</div>
+      <div class="speech-controls">
+        <button class="icon-btn" id="speak-reaction">🔊</button>
+        <div class="space"></div>
+        <div class="small muted">${opt.reaction_en}</div>
+      </div>
+      <div class="speech mt-16" id="speech-closing">${wrapWords(scenario.closing)}</div>
+      <div class="speech-controls">
+        <button class="icon-btn" id="speak-closing">🔊</button>
+        <div class="space"></div>
+        <div class="small muted">${scenario.closing_en}</div>
+      </div>
+      <button class="btn mt-16" id="continue-btn">
+        ${queueIndex + 1 >= dailyQueue.length ? 'End day' : 'Next customer →'}
+      </button>
+    `;
+  }
+
+  content += `</div></div>`;
+  slot.innerHTML = content;
+  attachInteractionHandlers();
+}
+
+function wrapWords(text) {
+  if (!text) return '';
+  return text.split(/(\s+)/).map(chunk => {
+    if (/^\s+$/.test(chunk)) return chunk;
+    const clean = chunk.replace(/[.,!?¿¡:;"'()]/g, '');
+    if (!clean) return chunk;
+    return `<span class="word-tap" data-word="${clean}">${chunk}</span>`;
+  }).join('');
+}
+
+function attachInteractionHandlers() {
+  const { scenario } = currentInteraction;
+
+  // Word tap for translation
+  document.querySelectorAll('.word-tap').forEach(el => {
+    el.addEventListener('click', e => showWordPopup(e, el.dataset.word));
+  });
+
+  // Speak buttons
+  const speakBtn = document.getElementById('speak-opening');
+  if (speakBtn) speakBtn.addEventListener('click', () => speak(scenario.opening, getVoice()));
+  const speakReact = document.getElementById('speak-reaction');
+  if (speakReact) speakReact.addEventListener('click', () => {
+    const opt = scenario.options[currentInteraction.chosenOption];
+    speak(opt.reaction, getVoice());
+  });
+  const speakClose = document.getElementById('speak-closing');
+  if (speakClose) speakClose.addEventListener('click', () => speak(scenario.closing, getVoice()));
+
+  // Mic
+  const micBtn = document.getElementById('mic-btn');
+  if (micBtn) micBtn.addEventListener('click', () => startMic(micBtn));
+
+  // Hint
+  const hintBtn = document.getElementById('hint-btn');
+  if (hintBtn) hintBtn.addEventListener('click', () => showHint());
+
+  // Options
+  document.querySelectorAll('#options-list .option-btn').forEach(btn => {
+    btn.addEventListener('click', () => chooseOption(parseInt(btn.dataset.option)));
+  });
+
+  // Continue
+  const contBtn = document.getElementById('continue-btn');
+  if (contBtn) contBtn.addEventListener('click', continueToNext);
+}
+
+function getVoice() {
+  const { customer, scenario } = currentInteraction;
+  if (customer.type === 'regular') {
+    const r = STARTER_REGULARS.find(x => x.id === customer.id);
+    return r.voice;
+  }
+  // Random voice params per walk-in
+  const langs = ['es-ES', 'es-MX', 'es-CO'];
+  return {
+    lang: langs[Math.floor(Math.random() * langs.length)],
+    pitch: 0.9 + Math.random() * 0.3,
+    rate: 0.9 + Math.random() * 0.2
+  };
+}
+
+function chooseOption(idx) {
+  const { scenario } = currentInteraction;
+  const opt = scenario.options[idx];
+  currentInteraction.chosenOption = idx;
+  currentInteraction.phase = 'reacted';
+
+  // Update state
+  let coinGain = opt.coins;
+  let loyaltyChange = opt.loyalty;
+  if (currentInteraction.hintUsed) {
+    coinGain = Math.floor(coinGain * 0.6);
+    loyaltyChange = Math.max(loyaltyChange - 2, -5);
+  }
+  state.coins += coinGain;
+  const isCorrect = opt.quality === 'correct';
+  state._todaySummary.coins += coinGain;
+  state._todaySummary.totalCount++;
+  if (isCorrect) state._todaySummary.correctCount++;
+
+  // Rating impact
+  const ratingImpact = isCorrect ? 0.05 : (opt.quality === 'acceptable' ? -0.02 : -0.15);
+  state._todaySummary.ratingChange += ratingImpact;
+
+  // Regular loyalty
+  if (currentInteraction.customer.type === 'regular') {
+    const rid = currentInteraction.customer.id;
+    state.regulars[rid].loyalty = Math.max(0, Math.min(100, state.regulars[rid].loyalty + loyaltyChange));
+    state.regulars[rid].lastVisitDay = state.day;
+    state.regulars[rid].streak++;
+    state.regulars[rid].storyStage++;
+    if (scenario.story_beat) {
+      state.regulars[rid].storyBeats.push(`Day ${state.day}: ${scenario.story_beat}`);
+      state._todaySummary.storyBeats.push(`<em>Day ${state.day} · ${scenario.customer_name}:</em> ${scenario.story_beat}`);
+    }
+  } else if (scenario.story_beat) {
+    state._todaySummary.storyBeats.push(`<em>Day ${state.day} · ${scenario.customer_name}:</em> ${scenario.story_beat}`);
+  }
+
+  // Diary
+  state.diary.unshift({
+    day: state.day,
+    text: `${scenario.customer_name}: ${scenario.story_beat || 'ordered from ' + DOMAINS[currentInteraction.domain].name}`
+  });
+  if (state.diary.length > 100) state.diary = state.diary.slice(0, 100);
+
+  // Vocab coverage
+  if (scenario.vocab_used) recordWordSeen(scenario.vocab_used);
+
+  saveState();
+  renderInteraction();
+  toast(`+${coinGain} 💰 ${loyaltyChange >= 0 ? '+' : ''}${loyaltyChange} loyalty`);
+}
+
+function continueToNext() {
+  queueIndex++;
+  currentInteraction = null;
+  if (queueIndex >= dailyQueue.length) {
+    finishDay();
+  } else {
+    render();
+    setTimeout(serveNextCustomer, 100);
+  }
+}
+
+function finishDay() {
+  // Apply rating change
+  const change = state._todaySummary.ratingChange;
+  state.rating = Math.max(1, Math.min(5, state.rating + change));
+  // Regulars who didn't visit lose streak
+  const visitedIds = new Set(dailyQueue.filter(c => c.type === 'regular').map(c => c.id));
+  for (const rid of state.unlockedRegulars) {
+    if (!visitedIds.has(rid)) {
+      state.regulars[rid].streak = 0;
+    }
+  }
+  saveState();
+  render();
+}
+
+function showHint() {
+  if (currentInteraction.hintUsed) return;
+  currentInteraction.hintUsed = true;
+  const hint = currentInteraction.scenario.hint;
+  const speech = document.getElementById('speech-opening').parentElement;
+  const hintBox = document.createElement('div');
+  hintBox.className = 'hint-box mt-8';
+  hintBox.innerHTML = `<b>Hint:</b> ${hint}<div class="small muted mt-8">Rewards reduced this order.</div>`;
+  speech.parentElement.insertBefore(hintBox, speech.nextSibling);
+  document.getElementById('hint-btn').style.opacity = '0.4';
+}
+
+// ============ WORD POPUP ============
+let popupEl = null;
+async function showWordPopup(event, word) {
+  if (popupEl) popupEl.remove();
+  const clean = normalizeWord(word);
+  const deck = getVocabDeck();
+  let translation = null;
+  for (const card of deck) {
+    const sp = normalizeWord(card.spanish || card.front || card.term || '');
+    if (sp === clean) { translation = card.english || card.back || card.definition; break; }
+  }
+  popupEl = document.createElement('div');
+  popupEl.className = 'word-popup';
+  popupEl.textContent = translation || 'Looking up...';
+  document.body.appendChild(popupEl);
+  const rect = event.target.getBoundingClientRect();
+  popupEl.style.left = Math.max(8, rect.left + rect.width / 2 - popupEl.offsetWidth / 2) + 'px';
+  popupEl.style.top = (rect.top - popupEl.offsetHeight - 10) + 'px';
+
+  if (!translation) {
+    try {
+      const en = await callApi(`Translate this single Spanish word to English. Reply with ONLY the English word/phrase, nothing else. Word: "${clean}"`, false);
+      if (popupEl) popupEl.textContent = en.trim();
+    } catch {
+      if (popupEl) popupEl.textContent = '(no translation)';
+    }
+  }
+
+  setTimeout(() => {
+    if (popupEl) { popupEl.remove(); popupEl = null; }
+  }, 3500);
+}
+
+// ============ TTS ============
+function speak(text, voiceHint) {
+  if (!('speechSynthesis' in window)) { toast('No speech support'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = voiceHint.lang || 'es-ES';
+  u.pitch = voiceHint.pitch || 1;
+  u.rate = voiceHint.rate || 1;
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang === u.lang) || voices.find(v => v.lang.startsWith(u.lang.split('-')[0]));
+  if (match) u.voice = match;
+  window.speechSynthesis.speak(u);
+}
+
+// ============ MIC (speech recognition) ============
+let recognition = null;
+function startMic(btn) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('No speech recognition on this device'); return; }
+  if (recognition) { recognition.stop(); recognition = null; btn.classList.remove('recording'); return; }
+  recognition = new SR();
+  recognition.lang = 'es-ES';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+  btn.classList.add('recording');
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    matchSpokenToOption(transcript);
+  };
+  recognition.onend = () => { btn.classList.remove('recording'); recognition = null; };
+  recognition.onerror = (e) => { toast('Mic error: ' + e.error); btn.classList.remove('recording'); recognition = null; };
+  recognition.start();
+}
+
+function matchSpokenToOption(transcript) {
+  const clean = transcript.toLowerCase().replace(/[.,!?¿¡]/g, '');
+  toast('Heard: "' + transcript + '"');
+  const { scenario, phase } = currentInteraction;
+  if (phase !== 'ordering') return;
+  // Match spoken to nearest option
+  let best = -1, bestScore = 0;
+  scenario.options.forEach((opt, i) => {
+    const target = opt.spanish.toLowerCase().replace(/[.,!?¿¡]/g, '');
+    const score = fuzzyMatch(clean, target);
+    if (score > bestScore) { bestScore = score; best = i; }
+  });
+  if (bestScore > 0.4 && best >= 0) {
+    setTimeout(() => chooseOption(best), 400);
+  } else {
+    toast("Couldn't match to an option. Try tapping instead.");
+  }
+}
+
+function fuzzyMatch(a, b) {
+  const wa = new Set(a.split(/\s+/).filter(w => w.length > 2));
+  const wb = new Set(b.split(/\s+/).filter(w => w.length > 2));
+  let match = 0;
+  for (const w of wa) if (wb.has(w)) match++;
+  const size = Math.max(wa.size, wb.size, 1);
+  return match / size;
+}
+
+// ============ REGULARS SCREEN ============
+function renderRegulars() {
+  if (!state.unlockedRegulars.length) {
+    return `<div class="empty"><h3>No regulars yet</h3><p>They'll show up as you play.</p></div>`;
+  }
+  return state.unlockedRegulars.map(rid => {
+    const r = STARTER_REGULARS.find(x => x.id === rid);
+    if (!r) return '';
+    const s = state.regulars[rid];
+    const daysSince = state.day - s.lastVisitDay;
+    return `
+      <div class="regular-card">
+        <div class="regular-header">
+          <div class="regular-avatar">${r.emoji}</div>
+          <div style="flex:1;">
+            <div class="regular-name">${r.name}</div>
+            <div class="regular-meta">${r.archetype}</div>
+            <div class="loyalty-bar"><div class="loyalty-fill" style="width:${s.loyalty}%;"></div></div>
+            <div class="regular-meta">Loyalty ${s.loyalty}%${s.streak > 0 ? ' · 🔥 ' + s.streak : ''}${s.lastVisitDay > 0 ? ' · Last visit: ' + (daysSince === 0 ? 'today' : daysSince + 'd ago') : ''}</div>
+          </div>
+        </div>
+        <div class="regular-meta" style="margin:8px 0;">${r.backstory}</div>
+        ${s.storyBeats.length ? `
+          <div class="story-beat">
+            <em>Latest story beat</em>
+            ${s.storyBeats[s.storyBeats.length - 1]}
+          </div>
+        ` : '<p class="small muted">No stories yet. Serve them a few times.</p>'}
+      </div>
+    `;
+  }).join('');
+}
+
+// ============ UPGRADE SCREEN ============
+function renderUpgrade() {
+  const items = Object.entries(DOMAINS).map(([id, d]) => {
+    const owned = state.unlockedDomains.includes(id);
+    const affordable = state.coins >= d.cost;
+    return `
+      <div class="upgrade-item">
+        <div class="upgrade-header">
+          <div>
+            <div class="upgrade-title">${getDomainEmoji(id)} ${d.name}</div>
+          </div>
+          ${owned ? '<div class="upgrade-cost owned">Unlocked</div>' : `<div class="upgrade-cost">${d.cost} 💰</div>`}
+        </div>
+        <div class="upgrade-desc">${d.desc}</div>
+        <div class="upgrade-vocab">Adds: ${d.vocab_focus}</div>
+        ${!owned ? `<button class="btn mt-8 ${affordable ? '' : 'btn-secondary'}" data-buy="${id}" ${affordable ? '' : 'disabled'}>
+          ${affordable ? 'Unlock' : 'Not enough coins'}
+        </button>` : ''}
+      </div>
+    `;
+  }).join('');
+  return items;
+}
+
+// ============ DIARY SCREEN ============
+function renderDiary() {
+  if (!state.diary.length) {
+    return `<div class="empty"><h3>Nothing yet</h3><p>Your day-by-day log will appear here.</p></div>`;
+  }
+  const grouped = {};
+  for (const entry of state.diary) {
+    if (!grouped[entry.day]) grouped[entry.day] = [];
+    grouped[entry.day].push(entry.text);
+  }
+  return Object.entries(grouped).map(([day, entries]) => `
+    <div class="diary-entry">
+      <div class="diary-date">Day ${day}</div>
+      ${entries.map(e => `<div style="margin-bottom:4px;">· ${e}</div>`).join('')}
+    </div>
+  `).join('');
+}
+
+// ============ HANDLERS ============
+function attachHandlers() {
+  // Setup
+  const save = document.getElementById('setup-save');
+  if (save) save.addEventListener('click', () => {
+    const key = document.getElementById('setup-key').value.trim();
+    if (key) {
+      localStorage.setItem(API_KEY_KEY, key);
+      toast('Key saved');
+      render();
+    }
+  });
+  // Open café
+  const openBtn = document.getElementById('open-btn');
+  if (openBtn) openBtn.addEventListener('click', async () => {
+    await startDay();
+    setTimeout(serveNextCustomer, 200);
+  });
+  // Next customer
+  const nextBtn = document.getElementById('next-customer');
+  if (nextBtn) nextBtn.addEventListener('click', serveNextCustomer);
+  // Next day
+  const nextDay = document.getElementById('next-day');
+  if (nextDay) nextDay.addEventListener('click', () => {
+    state.day++;
+    state.ordersToday = 0;
+    dailyQueue = [];
+    queueIndex = 0;
+    state._todaySummary = null;
+    saveState();
+    render();
+  });
+  // Upgrades
+  document.querySelectorAll('[data-buy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.buy;
+      const d = DOMAINS[id];
+      if (state.coins < d.cost) return;
+      state.coins -= d.cost;
+      state.unlockedDomains.push(id);
+      state.diary.unshift({ day: state.day, text: `Unlocked ${d.name}. New vocab coming your way.` });
+      saveState();
+      toast(`${d.name} unlocked!`);
+      render();
+    });
+  });
+}
+
+// ============ TOAST ============
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ============ BOOTSTRAP ============
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+renderStats();
+render();
+</script>
+
+</body>
+</html>
