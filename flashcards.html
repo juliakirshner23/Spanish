@@ -1793,7 +1793,7 @@ If the chunk has no extractable vocabulary, return: []`;
           'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5',
           max_tokens: 8000,
           messages: [{ role: 'user', content: buildPrompt(chunkText) }]
         })
@@ -2114,7 +2114,7 @@ async function generateConjExercise() {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 200,
         messages: [{ role: 'user', content: `Conjugate the Spanish verb "${card.spanish}" with pronoun "${pronoun}" in the ${tenseName}. Reply with ONLY the conjugated form, nothing else.` }]
       })
