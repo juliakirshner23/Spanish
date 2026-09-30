@@ -41,7 +41,8 @@
     min-height: 100svh;
     padding: 40px 24px;
     position: relative;
-    overflow: hidden;
+    height: auto;
+    overflow-x: hidden;
   }
 
   /* Ambient background elements */
@@ -148,6 +149,10 @@
     background: radial-gradient(ellipse at 20% 50%, rgba(217,148,46,0.10) 0%, transparent 60%);
   }
 
+  .app-card.red::before {
+    background: radial-gradient(ellipse at 20% 50%, rgba(217,79,79,0.09) 0%, transparent 60%);
+  }
+
   .app-card:hover, .app-card:active {
     border-color: var(--textLight);
     transform: translateY(-1px);
@@ -204,6 +209,11 @@
   .sun .app-name-badge {
     background: rgba(217,148,46,0.15);
     color: var(--sun);
+  }
+
+  .red .app-name-badge {
+    background: rgba(217,79,79,0.12);
+    color: var(--red);
   }
 
   .app-desc {
@@ -270,6 +280,16 @@
         <span class="app-name-badge">Game</span>
       </div>
       <div class="app-desc">Run a Spanish café · Serve customers · Build regulars</div>
+      <span class="app-arrow">›</span>
+    </a>
+
+    <a href="el-loro.html" class="app-card red">
+      <span class="app-icon">🦜</span>
+      <div class="app-name">
+        El Loro
+        <span class="app-name-badge">Puzzle</span>
+      </div>
+      <div class="app-desc">Sort words by category · Fill the grid · Ráfaga sprints</div>
       <span class="app-arrow">›</span>
     </a>
   </div>
