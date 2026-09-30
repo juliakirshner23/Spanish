@@ -250,7 +250,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 }
 .grid {
   --size: 8;
-  --cell: min(54px, calc((100vw - 60px) / var(--size)));
+  --cell: var(--cellpx, min(54px, calc((100vw - 60px) / var(--size))));
   display: grid;
   grid-template-columns: repeat(var(--size), var(--cell));
   grid-template-rows: repeat(var(--size), var(--cell));
@@ -361,7 +361,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 /* ============ Category legend (column headers) ============ */
 .cat-legend {
   --size: 8;
-  --cell: min(54px, calc((100vw - 60px) / var(--size)));
+  --cell: var(--cellpx, min(54px, calc((100vw - 60px) / var(--size))));
   display: grid;
   grid-template-columns: repeat(var(--size), var(--cell));
   gap: 4px;
@@ -495,7 +495,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
   transition: opacity 0.15s;
   touch-action: none;
   position: relative;
-  --tcell: 38px;
+  --tcell: var(--tcellpx, 34px);
 }
 .piece-slot.empty { visibility: hidden; }
 .piece-slot.dragging { opacity: 0.22; }
@@ -535,7 +535,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
   gap: 4px;
   opacity: 0.95;
   --size: 8;
-  --gcell: min(54px, calc((100vw - 60px) / var(--size)));
+  --gcell: var(--cellpx, min(54px, calc((100vw - 60px) / var(--size))));
 }
 .drag-ghost .piece-tile {
   width: var(--gcell);
@@ -1053,8 +1053,20 @@ label small {
   .mode-tab { padding: 6px 12px; min-width: 84px; }
   .score-val { font-size: 22px; }
 }
-</style>
 
+/* ===== Phone fit: compact chrome ===== */
+.app { gap: 6px; min-height: 0; }
+.in-browser .app { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+.brand h1 { font-size: 21px; }
+.parrot { width: 26px; height: 26px; }
+.icon-btn { width: 30px; height: 30px; font-size: 14px; }
+.mode-tab { padding: 4px 8px; }
+.scorebar { padding: 6px 10px; gap: 8px; }
+.score-val { font-size: 22px; }
+.right-stats .daily-target { font-size: 9.5px; text-align: right; white-space: nowrap; }
+.cat-chip { min-height: 22px; }
+.tray { padding: 8px 6px; min-height: 0; }
+</style>
 </head>
 <body>
 <div class="app">
@@ -1076,6 +1088,7 @@ label small {
       <button class="icon-btn" id="stats-btn" title="Estadísticas">📊</button>
       <button class="icon-btn" id="settings-btn" title="Ajustes">⚙️</button>
       <button class="icon-btn" id="help-btn" title="Cómo se juega">?</button>
+      <button class="icon-btn" id="new-game" title="Nuevo juego">↻</button>
     </div>
   </header>
 
@@ -1097,9 +1110,9 @@ label small {
     <div class="right-stats">
       <div class="chili" id="chili-wrap"><span class="chili-emoji" id="chili-emoji">🫑</span><span id="chili-count">0</span></div>
       <div class="timer" id="timer" hidden>1:30</div>
+      <div class="daily-target" id="daily-target"></div>
     </div>
   </div>
-  <div class="daily-target" id="daily-target"></div>
 
   <div class="grid-wrap">
     <div class="grid" id="grid"></div>
@@ -1109,11 +1122,7 @@ label small {
 
   <div class="tray" id="tray"></div>
 
-  <div class="controls">
-    <button id="new-game" class="primary">Nuevo juego</button>
-  </div>
-
-  <div class="foot-note" id="foot-note"></div>
+  <div class="foot-note" id="foot-note" hidden></div>
 </div>
 
 <div class="clear-banner" id="clear-banner" aria-live="polite"></div>
@@ -2043,7 +2052,8 @@ function fitText(root) {
     el.style.fontSize = '';
     let size = parseFloat(getComputedStyle(el).fontSize);
     let guard = 0;
-    while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > 6.5 && guard++ < 12) {
+    const minSize = el.classList.contains('cat-chip') ? 5.5 : 6.5;
+    while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > minSize && guard++ < 14) {
       size -= 0.5;
       el.style.fontSize = size + 'px';
     }
@@ -2282,11 +2292,11 @@ function renderDailyTarget() {
   const g = state.global;
   const cfg = MODES[state.mode];
   if (cfg && cfg.timed) {
-    el.textContent = `${state.mode === 'blitz6' ? 'Ráfaga 6' : 'Ráfaga 8'} · ${cfg.timeLimit}s`;
+    el.textContent = '';
     el.classList.remove('hit');
     return;
   }
-  el.innerHTML = `Meta hoy: <b>${g.todayTarget}</b>`;
+  el.innerHTML = `Meta hoy <b>${g.todayTarget}</b>`;
   el.classList.toggle('hit', g.targetHitToday);
 }
 
@@ -2937,14 +2947,38 @@ function init() {
   newGame();
 }
 
+// Size the board so the whole game fits on screen (above any browser toolbar)
+const IS_STANDALONE = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+if (!IS_STANDALONE) document.documentElement.classList.add('in-browser');
+function fitLayout() {
+  const root = document.documentElement;
+  const app = document.querySelector('.app');
+  if (!app) return;
+  const vw = Math.min(window.innerWidth, 480);
+  let cell = Math.min(54, Math.floor((vw - 60) / SIZE));
+  const apply = (c) => {
+    root.style.setProperty('--cellpx', c + 'px');
+    root.style.setProperty('--tcellpx', Math.min(34, Math.round(c * 0.85)) + 'px');
+  };
+  apply(cell);
+  let guard = 0;
+  while (app.getBoundingClientRect().height > window.innerHeight && cell > 30 && guard++ < 40) {
+    cell -= 1;
+    apply(cell);
+  }
+  fitText();
+}
+window.addEventListener('resize', () => fitLayout());
+window.addEventListener('orientationchange', () => setTimeout(fitLayout, 250));
+
 // Fit tile text after every render
 {
   const _rg = renderGrid, _rt = renderTray, _rl = renderCategoryLegend;
   renderGrid = function () { _rg(); fitText(gridEl); };
-  renderTray = function () { _rt(); fitText(trayEl); };
+  renderTray = function () { _rt(); fitLayout(); };
   renderCategoryLegend = function () { _rl(); fitText(document.getElementById('cat-legend')); };
 }
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitText());
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitLayout());
 
 init();
 </script>
